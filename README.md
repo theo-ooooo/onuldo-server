@@ -54,7 +54,30 @@
 - 비교보다 **기록**
 - 자극보다 **응원**
 
-> “오늘도 뭔가 했다”는 감각을 남기는 앱
+> "오늘도 뭔가 했다"는 감각을 남기는 앱
+
+---
+
+## 🏗️ 아키텍처
+
+Onuldo는 **헥사고날 아키텍처(Hexagonal Architecture)**를 기반으로 설계되었습니다.
+
+### 패키지 구조
+
+```
+com.onuldo/
+├── domain/              # 도메인 계층 (Entity, ValueObject, DomainService)
+├── port/               # 포트 계층 (Inbound/Outbound 인터페이스)
+│   ├── in/             # 인바운드 포트 (UseCase 인터페이스)
+│   └── out/            # 아웃바운드 포트 (Repository 인터페이스)
+├── application/        # 애플리케이션 계층 (UseCase 구현)
+├── adapter/            # 어댑터 계층
+│   ├── in/             # 인바운드 어댑터 (Web, Event)
+│   └── out/            # 아웃바운드 어댑터 (Persistence, External)
+└── common/             # 공통 모듈 (Config, DTO, Exception)
+```
+
+자세한 아키텍처 설명은 [ARCHITECTURE.md](./ARCHITECTURE.md)를 참고하세요.
 
 ---
 
