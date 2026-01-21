@@ -27,7 +27,7 @@ class User(
     val email: String,
 
     @Column(nullable = false, length = 255)
-    var password: String,
+    var password: String?,
 
     @Column(nullable = false, length = 50)
     var nickname: String,

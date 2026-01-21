@@ -14,7 +14,7 @@ import org.springframework.http.HttpStatus
  * throw CustomException(ErrorCode.USER_NOT_FOUND, details = mapOf("userId" to userId))
  * ```
  */
-class CustomException(
+open class CustomException(
     val errorCode: ErrorCode,
     message: String? = null,
     val details: Map<String, Any>? = null,
@@ -50,9 +50,9 @@ class ResourceNotFoundException(
 ) : CustomException(
     errorCode = errorCode,
     message = if (resourceId != null) {
-        "$resourceName을(를) 찾을 수 없습니다. (ID: $resourceId)"
+        "$resourceName 을(를) 찾을 수 없습니다. (ID: $resourceId)"
     } else {
-        "$resourceName을(를) 찾을 수 없습니다."
+        "$resourceName 을(를) 찾을 수 없습니다."
     },
     details = if (resourceId != null) {
         mapOf("resourceName" to resourceName, "resourceId" to resourceId.toString())
@@ -75,7 +75,7 @@ class DuplicateResourceException(
     errorCode: ErrorCode = ErrorCode.RESOURCE_DUPLICATE
 ) : CustomException(
     errorCode = errorCode,
-    message = message ?: "$resourceName이(가) 이미 존재합니다.",
+    message = message ?: "$resourceName 이(가) 이미 존재합니다.",
     details = mapOf("resourceName" to resourceName)
 )
 
