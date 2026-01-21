@@ -1,0 +1,6 @@
+# AWS 설정 (필요시 활성화)
+# aws:
+#   s3:
+#     bucket: ${AWS_S3_BUCKET:}
+#   region: ${AWS_REGION:ap-northeast-2}
+

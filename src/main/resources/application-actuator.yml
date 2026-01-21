@@ -1,0 +1,7 @@
+# Actuator 설정
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+

@@ -1,36 +1,23 @@
 spring:
   application:
     name: onuldo-server
-  
-  # JPA 설정
-  jpa:
-    hibernate:
-      ddl-auto: validate
-    show-sql: true
-    properties:
-      hibernate:
-        format_sql: true
-        dialect: org.hibernate.dialect.H2Dialect
-  
-  # H2 Database (개발용)
-  datasource:
-    url: jdbc:h2:mem:onuldo
-    driver-class-name: org.h2.Driver
-    username: sa
-    password:
 
-# OpenAPI/Swagger 설정
-springdoc:
-  api-docs:
-    path: /api-docs
-  swagger-ui:
-    path: /swagger-ui.html
-    enabled: true
+  profiles:
+    active: local
+    group:
+      local: "local"
+      dev: "dev"
+      prod: "prod"
+    include:
+      - security
+      - actuator
+      - redis
+      - aws
+      - docs
+      - datasource
 
-# 로깅 설정
+
 logging:
   level:
-    com.onuldo: DEBUG
+    com.onuldo: INFO
     org.springframework.web: INFO
-    org.hibernate.SQL: DEBUG
-

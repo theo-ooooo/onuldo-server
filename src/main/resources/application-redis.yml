@@ -1,0 +1,7 @@
+# Redis 설정 (필요시 활성화)
+# spring:
+#   data:
+#     redis:
+#       host: ${REDIS_HOST:localhost}
+#       port: ${REDIS_PORT:6379}
+
