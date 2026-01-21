@@ -1,0 +1,41 @@
+name: 🔨 기타 작업 (chore)
+description: 그 외 자잘한 수정에 대한 이슈
+title: "[chore] "
+labels: ["chore"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        그 외 자잘한 수정 작업입니다.
+        커밋 메시지: `chore: 작업 설명`
+  - type: textarea
+    id: description
+    attributes:
+      label: 작업 설명
+      description: 어떤 작업을 할지 명확하고 간결하게 설명해주세요.
+      placeholder: 예: .gitignore 파일에 빌드 디렉토리 추가
+    validations:
+      required: true
+  - type: textarea
+    id: changes
+    attributes:
+      label: 변경 사항
+      description: 구체적인 변경 내용을 작성해주세요.
+      placeholder: |
+        - .gitignore에 build/, .gradle/ 추가
+        - 불필요한 임시 파일 제거
+    validations:
+      required: true
+  - type: textarea
+    id: reason
+    attributes:
+      label: 변경 이유
+      description: 왜 이 변경이 필요한지 설명해주세요.
+      placeholder: 빌드 산출물이 Git에 커밋되지 않도록 하기 위함입니다.
+  - type: textarea
+    id: related
+    attributes:
+      label: 관련 이슈
+      description: 관련된 다른 이슈나 PR이 있다면 링크해주세요.
+      placeholder: Related to #123
+
