@@ -56,14 +56,6 @@ class GlobalExceptionHandler {
     }
 
     /**
-     * 비즈니스 예외 처리 (기존 호환성 유지)
-     */
-    @ExceptionHandler(BusinessException::class)
-    fun handleBusinessException(ex: BusinessException): ResponseEntity<ApiResponse<Nothing>> {
-        return handleCustomException(ex)
-    }
-
-    /**
      * IllegalArgumentException 처리
      */
     @ExceptionHandler(IllegalArgumentException::class)

@@ -34,18 +34,6 @@ class CustomException(
         get() = errorCode.code
 }
 
-/**
- * 비즈니스 로직 예외 (기존 호환성 유지)
- * 
- * @deprecated CustomException을 사용하세요.
- */
-@Deprecated("CustomException을 사용하세요.", ReplaceWith("CustomException(errorCode, message, details, cause)"))
-open class BusinessException(
-    errorCode: ErrorCode,
-    message: String? = null,
-    details: Map<String, Any>? = null,
-    cause: Throwable? = null
-) : CustomException(errorCode, message, details, cause)
 
 /**
  * 리소스를 찾을 수 없을 때 발생하는 예외
