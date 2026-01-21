@@ -38,21 +38,29 @@ class GlobalExceptionHandler {
     }
 
     /**
-     * 비즈니스 예외 처리
+     * 커스텀 예외 처리
      */
-    @ExceptionHandler(BusinessException::class)
-    fun handleBusinessException(ex: BusinessException): ResponseEntity<ApiResponse<Nothing>> {
+    @ExceptionHandler(CustomException::class)
+    fun handleCustomException(ex: CustomException): ResponseEntity<ApiResponse<Nothing>> {
         val errorResponse = ErrorResponse(
             code = ex.errorCodeString,
             message = ex.message ?: ex.errorCode.message,
             details = ex.details
         )
 
-        logger.warn("Business exception: {} - {}", ex.errorCodeString, ex.message, ex)
+        logger.warn("Custom exception: {} - {}", ex.errorCodeString, ex.message, ex)
 
         return ResponseEntity
             .status(ex.httpStatus)
             .body(ApiResponse.error(errorResponse))
+    }
+
+    /**
+     * 비즈니스 예외 처리 (기존 호환성 유지)
+     */
+    @ExceptionHandler(BusinessException::class)
+    fun handleBusinessException(ex: BusinessException): ResponseEntity<ApiResponse<Nothing>> {
+        return handleCustomException(ex)
     }
 
     /**

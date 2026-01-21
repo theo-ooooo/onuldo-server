@@ -17,14 +17,23 @@
 ### 기본 사용
 
 ```kotlin
-// ErrorCode enum 사용
-throw BusinessException(
+// ErrorCode enum 사용 (가장 간단한 방법)
+throw CustomException(ErrorCode.USER_NOT_FOUND)
+
+// 커스텀 메시지 포함
+throw CustomException(
     errorCode = ErrorCode.USER_NOT_FOUND,
     message = "사용자를 찾을 수 없습니다."
 )
 
-// 커스텀 메시지와 상세 정보 포함
-throw BusinessException(
+// 상세 정보 포함
+throw CustomException(
+    errorCode = ErrorCode.TIMER_ALREADY_STARTED,
+    details = mapOf("timerId" to timerId, "userId" to userId)
+)
+
+// 메시지와 상세 정보 모두 포함
+throw CustomException(
     errorCode = ErrorCode.TIMER_ALREADY_STARTED,
     message = "이미 실행 중인 타이머가 있습니다.",
     details = mapOf("timerId" to timerId, "userId" to userId)

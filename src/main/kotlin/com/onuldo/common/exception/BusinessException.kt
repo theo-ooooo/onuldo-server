@@ -3,11 +3,18 @@ package com.onuldo.common.exception
 import org.springframework.http.HttpStatus
 
 /**
- * 비즈니스 로직 예외
+ * 커스텀 예외
  * 
  * ErrorCode를 사용하여 에러를 정의합니다.
+ * 
+ * 사용 예시:
+ * ```
+ * throw CustomException(ErrorCode.USER_NOT_FOUND)
+ * throw CustomException(ErrorCode.USER_NOT_FOUND, "사용자를 찾을 수 없습니다.")
+ * throw CustomException(ErrorCode.USER_NOT_FOUND, details = mapOf("userId" to userId))
+ * ```
  */
-open class BusinessException(
+class CustomException(
     val errorCode: ErrorCode,
     message: String? = null,
     val details: Map<String, Any>? = null,
@@ -28,13 +35,31 @@ open class BusinessException(
 }
 
 /**
+ * 비즈니스 로직 예외 (기존 호환성 유지)
+ * 
+ * @deprecated CustomException을 사용하세요.
+ */
+@Deprecated("CustomException을 사용하세요.", ReplaceWith("CustomException(errorCode, message, details, cause)"))
+open class BusinessException(
+    errorCode: ErrorCode,
+    message: String? = null,
+    details: Map<String, Any>? = null,
+    cause: Throwable? = null
+) : CustomException(errorCode, message, details, cause)
+
+/**
  * 리소스를 찾을 수 없을 때 발생하는 예외
+ * 
+ * 사용 예시:
+ * ```
+ * throw ResourceNotFoundException("타이머", timerId)
+ * ```
  */
 class ResourceNotFoundException(
     resourceName: String,
     resourceId: Any? = null,
     errorCode: ErrorCode = ErrorCode.RESOURCE_NOT_FOUND
-) : BusinessException(
+) : CustomException(
     errorCode = errorCode,
     message = if (resourceId != null) {
         "$resourceName을(를) 찾을 수 없습니다. (ID: $resourceId)"
@@ -50,12 +75,17 @@ class ResourceNotFoundException(
 
 /**
  * 중복된 리소스일 때 발생하는 예외
+ * 
+ * 사용 예시:
+ * ```
+ * throw DuplicateResourceException("취미")
+ * ```
  */
 class DuplicateResourceException(
     resourceName: String,
     message: String? = null,
     errorCode: ErrorCode = ErrorCode.RESOURCE_DUPLICATE
-) : BusinessException(
+) : CustomException(
     errorCode = errorCode,
     message = message ?: "$resourceName이(가) 이미 존재합니다.",
     details = mapOf("resourceName" to resourceName)
@@ -63,22 +93,34 @@ class DuplicateResourceException(
 
 /**
  * 권한이 없을 때 발생하는 예외
+ * 
+ * 사용 예시:
+ * ```
+ * throw UnauthorizedException()
+ * throw UnauthorizedException("로그인이 필요합니다.")
+ * ```
  */
 class UnauthorizedException(
     message: String? = null,
     errorCode: ErrorCode = ErrorCode.AUTH_UNAUTHORIZED
-) : BusinessException(
+) : CustomException(
     errorCode = errorCode,
     message = message
 )
 
 /**
  * 접근이 금지되었을 때 발생하는 예외
+ * 
+ * 사용 예시:
+ * ```
+ * throw ForbiddenException()
+ * throw ForbiddenException("이 기록에 접근할 권한이 없습니다.")
+ * ```
  */
 class ForbiddenException(
     message: String? = null,
     errorCode: ErrorCode = ErrorCode.AUTH_FORBIDDEN
-) : BusinessException(
+) : CustomException(
     errorCode = errorCode,
     message = message
 )
