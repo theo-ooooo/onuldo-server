@@ -25,15 +25,15 @@ class GlobalExceptionHandler {
         }
 
         val errorResponse = ErrorResponse(
-            code = "VALIDATION_ERROR",
-            message = "입력값 검증에 실패했습니다.",
+            code = ErrorCode.COMMON_VALIDATION_ERROR.code,
+            message = ErrorCode.COMMON_VALIDATION_ERROR.message,
             details = errors
         )
 
         logger.warn("Validation error: {}", errors)
 
         return ResponseEntity
-            .status(HttpStatus.BAD_REQUEST)
+            .status(ErrorCode.COMMON_VALIDATION_ERROR.httpStatus)
             .body(ApiResponse.error(errorResponse))
     }
 
@@ -43,11 +43,12 @@ class GlobalExceptionHandler {
     @ExceptionHandler(BusinessException::class)
     fun handleBusinessException(ex: BusinessException): ResponseEntity<ApiResponse<Nothing>> {
         val errorResponse = ErrorResponse(
-            code = ex.errorCode,
-            message = ex.message ?: "비즈니스 로직 오류가 발생했습니다."
+            code = ex.errorCodeString,
+            message = ex.message ?: ex.errorCode.message,
+            details = ex.details
         )
 
-        logger.warn("Business exception: {}", ex.message, ex)
+        logger.warn("Business exception: {} - {}", ex.errorCodeString, ex.message, ex)
 
         return ResponseEntity
             .status(ex.httpStatus)
@@ -60,14 +61,14 @@ class GlobalExceptionHandler {
     @ExceptionHandler(IllegalArgumentException::class)
     fun handleIllegalArgumentException(ex: IllegalArgumentException): ResponseEntity<ApiResponse<Nothing>> {
         val errorResponse = ErrorResponse(
-            code = "ILLEGAL_ARGUMENT",
-            message = ex.message ?: "잘못된 인자가 전달되었습니다."
+            code = ErrorCode.COMMON_ILLEGAL_ARGUMENT.code,
+            message = ex.message ?: ErrorCode.COMMON_ILLEGAL_ARGUMENT.message
         )
 
         logger.warn("Illegal argument: {}", ex.message, ex)
 
         return ResponseEntity
-            .status(HttpStatus.BAD_REQUEST)
+            .status(ErrorCode.COMMON_ILLEGAL_ARGUMENT.httpStatus)
             .body(ApiResponse.error(errorResponse))
     }
 
@@ -77,14 +78,14 @@ class GlobalExceptionHandler {
     @ExceptionHandler(Exception::class)
     fun handleException(ex: Exception): ResponseEntity<ApiResponse<Nothing>> {
         val errorResponse = ErrorResponse(
-            code = "INTERNAL_SERVER_ERROR",
-            message = "서버 내부 오류가 발생했습니다."
+            code = ErrorCode.COMMON_INTERNAL_SERVER_ERROR.code,
+            message = ErrorCode.COMMON_INTERNAL_SERVER_ERROR.message
         )
 
         logger.error("Unexpected error occurred", ex)
 
         return ResponseEntity
-            .status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .status(ErrorCode.COMMON_INTERNAL_SERVER_ERROR.httpStatus)
             .body(ApiResponse.error(errorResponse))
     }
 }
