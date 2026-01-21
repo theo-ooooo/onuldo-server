@@ -1,0 +1,52 @@
+name: ♻️ 리팩토링 (refactor)
+description: 코드 리팩토링에 대한 이슈
+title: "[refactor] "
+labels: ["refactor"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        코드 리팩토링 작업입니다.
+        커밋 메시지: `refactor: 리팩토링 설명`
+  - type: textarea
+    id: description
+    attributes:
+      label: 리팩토링 설명
+      description: 리팩토링할 내용에 대한 명확하고 간결한 설명을 작성해주세요.
+      placeholder: 예: TimerService의 중복 코드 제거 및 메서드 분리
+    validations:
+      required: true
+  - type: textarea
+    id: motivation
+    attributes:
+      label: 리팩토링 동기
+      description: 왜 리팩토링이 필요한지 설명해주세요.
+      placeholder: 코드 중복이 많아 유지보수가 어렵고, 가독성이 떨어집니다.
+    validations:
+      required: true
+  - type: textarea
+    id: changes
+    attributes:
+      label: 변경 사항
+      description: 어떤 부분을 어떻게 변경할지 작성해주세요.
+      placeholder: |
+        - 중복된 타이머 검증 로직을 별도 메서드로 추출
+        - Service 계층의 책임 분리
+    validations:
+      required: true
+  - type: checkboxes
+    id: breaking
+    attributes:
+      label: Breaking Changes
+      description: 이 리팩토링이 기존 코드에 영향을 주는지 체크해주세요.
+      options:
+        - label: API 변경이 있습니다
+        - label: 데이터베이스 스키마 변경이 있습니다
+        - label: 기존 기능 동작이 변경됩니다
+  - type: textarea
+    id: related
+    attributes:
+      label: 관련 이슈
+      description: 관련된 다른 이슈나 PR이 있다면 링크해주세요.
+      placeholder: Related to #123
+

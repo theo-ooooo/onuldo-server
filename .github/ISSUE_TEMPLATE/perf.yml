@@ -1,0 +1,52 @@
+name: ⚡ 성능 개선 (perf)
+description: 성능 개선에 대한 이슈
+title: "[perf] "
+labels: ["performance"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        성능을 개선하는 작업입니다.
+        커밋 메시지: `perf: 성능 개선 설명`
+  - type: textarea
+    id: description
+    attributes:
+      label: 성능 개선 설명
+      description: 어떤 성능을 어떻게 개선할지 설명해주세요.
+      placeholder: 예: 피드 조회 API의 쿼리 최적화
+    validations:
+      required: true
+  - type: textarea
+    id: current
+    attributes:
+      label: 현재 성능
+      description: 현재 성능 상태를 설명해주세요.
+      placeholder: |
+        - 피드 조회 API 응답 시간: 평균 2.5초
+        - N+1 쿼리 문제 발생
+    validations:
+      required: true
+  - type: textarea
+    id: improvement
+    attributes:
+      label: 개선 방법
+      description: 어떻게 성능을 개선할지 계획을 작성해주세요.
+      placeholder: |
+        - JOIN FETCH를 사용하여 N+1 쿼리 문제 해결
+        - 인덱스 추가
+        - 캐싱 적용
+    validations:
+      required: true
+  - type: textarea
+    id: target
+    attributes:
+      label: 목표 성능
+      description: 개선 후 목표하는 성능을 작성해주세요.
+      placeholder: 피드 조회 API 응답 시간: 평균 500ms 이하
+  - type: textarea
+    id: related
+    attributes:
+      label: 관련 이슈
+      description: 관련된 다른 이슈나 PR이 있다면 링크해주세요.
+      placeholder: Related to #123
+

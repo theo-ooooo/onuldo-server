@@ -1,0 +1,49 @@
+name: 🧪 테스트 (test)
+description: 테스트 코드 작성/수정에 대한 이슈
+title: "[test] "
+labels: ["test"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        테스트 코드를 작성하거나 수정하는 작업입니다.
+        커밋 메시지: `test: 테스트 설명`
+  - type: dropdown
+    id: test_type
+    attributes:
+      label: 테스트 유형
+      description: 테스트의 유형을 선택해주세요.
+      options:
+        - 단위 테스트
+        - 통합 테스트
+        - E2E 테스트
+        - 성능 테스트
+        - 기타
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: 테스트 설명
+      description: 어떤 테스트를 작성하거나 수정할지 설명해주세요.
+      placeholder: 예: TimerService의 타이머 시작 기능에 대한 단위 테스트 작성
+    validations:
+      required: true
+  - type: textarea
+    id: coverage
+    attributes:
+      label: 테스트 커버리지
+      description: 어떤 부분을 테스트할지 작성해주세요.
+      placeholder: |
+        - 타이머 시작 성공 케이스
+        - 타이머 시작 실패 케이스 (이미 실행 중인 경우)
+        - 예외 처리 케이스
+    validations:
+      required: true
+  - type: textarea
+    id: related
+    attributes:
+      label: 관련 이슈
+      description: 관련된 다른 이슈나 PR이 있다면 링크해주세요.
+      placeholder: Related to #123
+

@@ -1,0 +1,56 @@
+name: 📦 빌드 (build)
+description: 빌드 관련 파일 수정에 대한 이슈
+title: "[build] "
+labels: ["build"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        빌드 관련 파일 수정 작업입니다.
+        커밋 메시지: `build: 빌드 수정 설명`
+  - type: dropdown
+    id: build_type
+    attributes:
+      label: 빌드 수정 유형
+      description: 어떤 빌드 관련 작업인지 선택해주세요.
+      options:
+        - 의존성 추가/제거
+        - 빌드 스크립트 수정
+        - 빌드 설정 변경
+        - 모듈 구조 변경
+        - 기타
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: 빌드 수정 설명
+      description: 빌드 관련 어떤 파일을 어떻게 수정할지 설명해주세요.
+      placeholder: 예: Jackson 라이브러리 의존성 추가
+    validations:
+      required: true
+  - type: textarea
+    id: changes
+    attributes:
+      label: 변경 사항
+      description: 구체적인 변경 내용을 작성해주세요.
+      placeholder: |
+        - build.gradle.kts에 jackson-module-kotlin 의존성 추가
+        - 버전: 2.15.2
+    validations:
+      required: true
+  - type: textarea
+    id: reason
+    attributes:
+      label: 변경 이유
+      description: 왜 이 변경이 필요한지 설명해주세요.
+      placeholder: Kotlin 데이터 클래스의 JSON 직렬화/역직렬화를 위해 필요합니다.
+    validations:
+      required: true
+  - type: textarea
+    id: related
+    attributes:
+      label: 관련 이슈
+      description: 관련된 다른 이슈나 PR이 있다면 링크해주세요.
+      placeholder: Related to #123
+

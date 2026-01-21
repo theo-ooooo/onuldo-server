@@ -1,0 +1,72 @@
+name: 🐛 버그 수정 (fix)
+description: 버그 수정에 대한 이슈
+title: "[fix] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        버그를 수정하는 작업입니다.
+        커밋 메시지: `fix: 버그 설명`
+  - type: textarea
+    id: description
+    attributes:
+      label: 버그 설명
+      description: 버그에 대한 명확하고 간결한 설명을 작성해주세요.
+      placeholder: 예: 타이머를 시작한 후 일시정지 버튼을 누르면 앱이 크래시됩니다.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: 재현 단계
+      description: 버그를 재현하는 단계를 작성해주세요.
+      placeholder: |
+        1. '...'로 이동
+        2. '...' 클릭
+        3. '...'까지 스크롤
+        4. 오류 확인
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: 예상 동작
+      description: 예상했던 동작을 설명해주세요.
+      placeholder: 타이머가 일시정지되어야 합니다.
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: 실제 동작
+      description: 실제로 발생한 동작을 설명해주세요.
+      placeholder: 앱이 크래시되고 종료됩니다.
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: 해결 방법
+      description: 버그를 어떻게 수정할지 계획을 작성해주세요.
+      placeholder: null 체크를 추가하여 NullPointerException을 방지합니다.
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: 환경 정보
+      description: 다음 정보를 포함해주세요.
+      placeholder: |
+        - OS: [예: Windows 11, macOS 14]
+        - Java 버전: [예: Java 21]
+        - Spring Boot 버전: [예: 4.0.1]
+    validations:
+      required: true
+  - type: textarea
+    id: related
+    attributes:
+      label: 관련 이슈
+      description: 관련된 다른 이슈나 PR이 있다면 링크해주세요.
+      placeholder: Fixes #123
+
