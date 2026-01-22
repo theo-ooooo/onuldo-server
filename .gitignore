@@ -39,4 +39,7 @@ out/
 ### Kotlin ###
 .kotlin
 
+### QueryDSL ###
+build/generated/
+
 .env

@@ -4,6 +4,7 @@ plugins {
     id("org.springframework.boot") version "4.0.1"
     id("io.spring.dependency-management") version "1.1.7"
     kotlin("plugin.jpa") version "2.2.21"
+    kotlin("kapt") version "2.2.21"
 }
 
 group = "com.onuldo"
@@ -35,15 +36,28 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("com.fasterxml.jackson.core:jackson-databind")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
+    
+    // Kotlin Coroutines
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.9.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.9.0")
 
     // JWT
     implementation("io.jsonwebtoken:jjwt-api:0.11.5")
     runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.5")
     runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.11.5")
 
+    // Redis
+    implementation("org.springframework.boot:spring-boot-starter-data-redis")
 
+    // QueryDSL
+    implementation("com.querydsl:querydsl-jpa:5.1.0:jakarta")
+    kapt("com.querydsl:querydsl-apt:5.1.0:jakarta")
+    kapt("jakarta.annotation:jakarta.annotation-api")
+    kapt("jakarta.persistence:jakarta.persistence-api")
+
+    // Swagger
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.0")
-
 
     // H2
     runtimeOnly("com.h2database:h2")
@@ -66,4 +80,14 @@ allOpen {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+// QueryDSL Q 클래스 생성 경로
+sourceSets["main"].java.srcDirs("$buildDir/generated/source/kapt/main")
+
+// Kapt 설정
+kapt {
+    arguments {
+        arg("querydsl.entityAccessors", "true")
+    }
 }
