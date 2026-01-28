@@ -2,6 +2,8 @@ package com.onuldo.adapter.outbound.persistence.record
 
 import com.onuldo.domain.record.Record
 import com.onuldo.port.outbound.record.RecordRepository
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Repository
 import java.time.LocalDate
@@ -21,6 +23,11 @@ class RecordRepositoryImpl(
 
     override fun findByUserId(userId: Long): List<Record> {
         return recordJpaRepository.findByUserId(userId)
+    }
+
+    override fun findByUserIdPaged(userId: Long, page: Int, size: Int): List<Record> {
+        val pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"))
+        return recordJpaRepository.findByUserId(userId, pageable).content
     }
 
     override fun findByUserIdAndActivityDate(userId: Long, date: LocalDate): List<Record> {
