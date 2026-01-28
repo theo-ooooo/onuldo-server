@@ -7,7 +7,8 @@ import org.springframework.data.jpa.repository.Query
 interface TagJpaRepository : JpaRepository<Tag, Long> {
     fun findByName(name: String): Tag?
     fun findByNameIn(names: List<String>): List<Tag>
+    fun findByIdIn(ids: List<Long>): List<Tag>
 
-    @Query("SELECT t FROM Tag t ORDER BY t.usageCount DESC")
+    @Query("SELECT t FROM Tag t ORDER BY t.usageCount DESC LIMIT :limit")
     fun findPopularTags(limit: Int): List<Tag>
 }

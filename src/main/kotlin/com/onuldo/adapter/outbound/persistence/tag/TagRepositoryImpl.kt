@@ -27,6 +27,10 @@ class TagRepositoryImpl(
         return tagJpaRepository.findByNameIn(names)
     }
 
+    override fun findByIds(ids: List<Long>): List<Tag> {
+        return tagJpaRepository.findByIdIn(ids)
+    }
+
     override fun findPopularTags(limit: Int): List<Tag> {
         return tagJpaRepository.findPopularTags(limit)
     }

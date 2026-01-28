@@ -7,5 +7,6 @@ interface TagRepository {
     fun findById(id: Long): Tag?
     fun findByName(name: String): Tag?
     fun findByNameIn(names: List<String>): List<Tag>
+    fun findByIds(ids: List<Long>): List<Tag>
     fun findPopularTags(limit: Int): List<Tag>
 }
