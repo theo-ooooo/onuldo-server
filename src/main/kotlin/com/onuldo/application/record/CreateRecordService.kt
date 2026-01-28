@@ -24,9 +24,11 @@ class CreateRecordService(
 
     @Transactional
     override fun execute(command: CreateRecordCommand): RecordResponse {
+        // Validate hobby exists
         hobbyRepository.findById(command.hobbyId)
             ?: throw ResourceNotFoundException("취미", command.hobbyId)
 
+        // Create record
         val record = Record(
             userId = command.userId,
             hobbyId = command.hobbyId,
@@ -40,6 +42,7 @@ class CreateRecordService(
         val savedRecord = recordRepository.save(record)
         val recordId = savedRecord.id ?: throw IllegalStateException("기록 ID가 없습니다.")
 
+        // Process tags
         val tagNames = processTags(command.tagNames, recordId)
 
         return RecordResponse(
@@ -63,12 +66,14 @@ class CreateRecordService(
         val existingTags = tagRepository.findByNameIn(normalizedNames)
         val existingTagNames = existingTags.map { it.name }.toSet()
 
+        // Create new tags
         val newTags = normalizedNames.filter { it !in existingTagNames }.map { name ->
             tagRepository.save(Tag(name = name))
         }
 
         val allTags = existingTags + newTags
 
+        // Create record-tag associations and increment usage count
         val recordTags = allTags.map { tag ->
             tag.incrementUsageCount()
             tagRepository.save(tag)

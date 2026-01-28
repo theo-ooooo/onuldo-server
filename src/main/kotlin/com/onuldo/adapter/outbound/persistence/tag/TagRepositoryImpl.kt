@@ -2,6 +2,7 @@ package com.onuldo.adapter.outbound.persistence.tag
 
 import com.onuldo.domain.tag.Tag
 import com.onuldo.port.outbound.tag.TagRepository
+import org.springframework.data.domain.PageRequest
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Repository
 
