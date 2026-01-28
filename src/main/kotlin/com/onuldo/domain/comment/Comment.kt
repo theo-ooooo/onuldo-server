@@ -7,8 +7,6 @@ import jakarta.persistence.Index
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.Table
-import jakarta.persistence.JoinColumn
-import jakarta.persistence.ManyToOne
 
 /**
  * 댓글 엔티티
