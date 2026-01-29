@@ -154,6 +154,18 @@ enum class ErrorCode(
         code = "FOLLOW_NOT_FOUND",
         message = "팔로우 관계를 찾을 수 없습니다.",
         httpStatus = HttpStatus.NOT_FOUND
+    ),
+
+    // 리액션 에러 (REACTION_*)
+    REACTION_NOT_FOUND(
+        code = "REACTION_NOT_FOUND",
+        message = "리액션을 찾을 수 없습니다.",
+        httpStatus = HttpStatus.NOT_FOUND
+    ),
+    REACTION_ALREADY_EXISTS(
+        code = "REACTION_ALREADY_EXISTS",
+        message = "이미 동일한 리액션이 존재합니다.",
+        httpStatus = HttpStatus.CONFLICT
     );
 }
 
