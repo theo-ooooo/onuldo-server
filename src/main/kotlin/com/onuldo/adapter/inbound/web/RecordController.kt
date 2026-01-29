@@ -37,7 +37,7 @@ class RecordController(
             durationSeconds = body.durationSeconds,
             memo = body.memo,
             visibility = body.visibility,
-            tagNames = body.tags,
+            tagNames = body.tags ?: emptyList(),
             activityDate = body.activityDate ?: LocalDate.now()
         )
         val record = createRecordUseCase.execute(command)
