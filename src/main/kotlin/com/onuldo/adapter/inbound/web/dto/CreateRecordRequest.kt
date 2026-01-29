@@ -19,7 +19,7 @@ data class CreateRecordRequest(
 
     val visibility: RecordVisibility = RecordVisibility.PUBLIC,
 
-    val tags: List<String> = emptyList(),
+    val tags: List<String>? = null,
 
     val activityDate: LocalDate? = null
 )
