@@ -11,3 +11,4 @@ interface HobbyJpaRepository : JpaRepository<Hobby, Long> {
     fun existsByNameAndUserIdAndIdNot(name: String, userId: Long, excludeId: Long): Boolean
 }
 
+

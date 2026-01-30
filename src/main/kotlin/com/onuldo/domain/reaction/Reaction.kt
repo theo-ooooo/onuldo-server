@@ -36,3 +36,4 @@ class Reaction(
     val emojiType: EmojiType
 ) : BaseEntity()
 
+
