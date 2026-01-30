@@ -90,6 +90,11 @@ enum class ErrorCode(
         message = "이미 사용 중인 이메일입니다.",
         httpStatus = HttpStatus.CONFLICT
     ),
+    USER_NICKNAME_DUPLICATE(
+        code = "USER_NICKNAME_DUPLICATE",
+        message = "이미 사용 중인 닉네임입니다.",
+        httpStatus = HttpStatus.CONFLICT
+    ),
 
     // 타이머 에러 (TIMER_*)
     TIMER_NOT_FOUND(
@@ -168,4 +173,5 @@ enum class ErrorCode(
         httpStatus = HttpStatus.CONFLICT
     );
 }
+
 

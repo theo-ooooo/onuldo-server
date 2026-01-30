@@ -1,6 +1,6 @@
 package com.onuldo.common.security
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.onuldo.common.dto.ApiResponse
 import com.onuldo.common.dto.ErrorResponse
 import com.onuldo.common.exception.ErrorCode
@@ -16,9 +16,9 @@ import org.springframework.stereotype.Component
  * 인증은 되었지만 권한이 없을 때 호출됩니다.
  */
 @Component
-class JwtAccessDeniedHandler : AccessDeniedHandler {
-
-    private val objectMapper = jacksonObjectMapper()
+class JwtAccessDeniedHandler(
+    private val objectMapper: ObjectMapper
+) : AccessDeniedHandler {
 
     override fun handle(
         request: HttpServletRequest,

@@ -1,13 +1,11 @@
 package com.onuldo.application.user
 
-import com.onuldo.common.config.JwtProperties
 import com.onuldo.common.exception.CustomException
 import com.onuldo.common.exception.ErrorCode
 import com.onuldo.common.security.JwtTokenProvider
 import com.onuldo.port.inbound.user.model.LoginResult
 import com.onuldo.port.inbound.user.model.LoginUserCommand
 import com.onuldo.port.inbound.user.usecase.LoginUserUseCase
-import com.onuldo.port.outbound.user.RefreshTokenRepository
 import com.onuldo.port.outbound.user.UserRepository
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
@@ -17,9 +15,7 @@ import org.springframework.transaction.annotation.Transactional
 class LoginUserService(
     private val userRepository: UserRepository,
     private val passwordEncoder: PasswordEncoder,
-    private val jwtTokenProvider: JwtTokenProvider,
-    private val refreshTokenRepository: RefreshTokenRepository,
-    private val jwtProperties: JwtProperties
+    private val jwtTokenProvider: JwtTokenProvider
 ) : LoginUserUseCase {
 
     @Transactional(readOnly = true)
@@ -43,13 +39,6 @@ class LoginUserService(
         val accessToken = jwtTokenProvider.generateAccessToken(userId, user.email)
         val refreshToken = jwtTokenProvider.generateRefreshToken(userId, user.email)
 
-        // Redis에 리프레시 토큰 저장
-        refreshTokenRepository.save(
-            userId = userId,
-            refreshToken = refreshToken,
-            expirationSeconds = jwtProperties.refreshTokenValidityInSeconds
-        )
-
         return LoginResult(
             userId = userId,
             email = user.email,
@@ -58,6 +47,9 @@ class LoginUserService(
             refreshToken = refreshToken
         )
     }
+
+
+
 }
 
 

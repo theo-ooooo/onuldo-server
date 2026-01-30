@@ -25,6 +25,13 @@ class RegisterUserService(
             )
         }
 
+        if (userRepository.existsByNickname(command.nickname)) {
+            throw CustomException(
+                errorCode = ErrorCode.USER_NICKNAME_DUPLICATE,
+                details = mapOf("nickname" to command.nickname)
+            )
+        }
+
         val encodedPassword = passwordEncoder.encode(command.rawPassword)
 
         val user = User(

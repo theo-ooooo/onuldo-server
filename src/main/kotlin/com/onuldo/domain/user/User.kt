@@ -29,7 +29,7 @@ class User(
     @Column(nullable = false, length = 255)
     var password: String?,
 
-    @Column(nullable = false, length = 50)
+    @Column(unique = true, nullable = false, length = 50)
     var nickname: String,
 
     @Enumerated(EnumType.STRING)
@@ -67,5 +67,6 @@ class User(
         this.status = UserStatus.DELETED
     }
 }
+
 
 

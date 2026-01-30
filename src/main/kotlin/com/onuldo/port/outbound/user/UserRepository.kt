@@ -16,6 +16,14 @@ interface UserRepository {
     fun findByEmail(email: String): User?
 
     fun existsByEmail(email: String): Boolean
+
+    fun existsByNickname(nickname: String): Boolean
+
+    fun searchByKeyword(keyword: String): List<User>
+
+    fun searchUsersWithFollowCount(keyword: String): List<UserWithFollowCountResult>
+
+    fun findUserWithFollowCount(userId: Long): UserWithFollowCountResult?
 }
 
 
