@@ -1,5 +1,7 @@
 package com.onuldo.application.record
 
+import com.onuldo.common.exception.CustomException
+import com.onuldo.common.exception.ErrorCode
 import com.onuldo.common.exception.ResourceNotFoundException
 import com.onuldo.domain.record.Record
 import com.onuldo.domain.tag.RecordTag
@@ -42,7 +44,7 @@ class CreateRecordService(
         )
 
         val savedRecord = recordRepository.save(record)
-        val recordId = savedRecord.id ?: throw IllegalStateException("기록 ID가 없습니다.")
+        val recordId = savedRecord.id ?: throw CustomException(ErrorCode.COMMON_INTERNAL_SERVER_ERROR, "기록 ID가 없습니다.")
 
         // Update user hobby statistics
         val userHobby = userHobbyRepository.findOrCreate(command.userId, command.hobbyId)

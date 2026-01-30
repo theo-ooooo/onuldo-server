@@ -1,6 +1,9 @@
 package com.onuldo.adapter.outbound.persistence.user
 
+import com.onuldo.common.exception.CustomException
+import com.onuldo.common.exception.ErrorCode
 import com.onuldo.domain.user.User
+import com.onuldo.port.outbound.follow.FollowRepository
 import com.onuldo.port.outbound.user.UserRepository
 import com.onuldo.port.outbound.user.UserWithFollowCountResult
 import org.springframework.stereotype.Repository
@@ -11,7 +14,7 @@ import org.springframework.stereotype.Repository
 @Repository
 class UserRepositoryImpl(
     private val userJpaRepository: UserJpaRepository,
-    private val userQueryRepository: UserQueryRepository
+    private val followRepository: FollowRepository
 ) : UserRepository {
 
     override fun save(user: User): User = userJpaRepository.save(user)
@@ -32,28 +35,28 @@ class UserRepositoryImpl(
         userJpaRepository.searchByKeyword(keyword)
 
     override fun searchUsersWithFollowCount(keyword: String): List<UserWithFollowCountResult> =
-        userQueryRepository.searchUsersWithFollowCount(keyword).map { dto ->
+        searchByKeyword(keyword).map { user ->
             UserWithFollowCountResult(
-                userId = dto.userId,
-                email = dto.email,
-                nickname = dto.nickname,
-                profileImageUrl = dto.profileImageUrl,
-                bio = dto.bio,
-                followerCount = dto.followerCount,
-                followingCount = dto.followingCount
+                userId = user.id ?: throw CustomException(ErrorCode.COMMON_INTERNAL_SERVER_ERROR, "사용자 ID가 없습니다."),
+                email = user.email,
+                nickname = user.nickname,
+                profileImageUrl = user.profileImageUrl,
+                bio = user.bio,
+                followerCount = followRepository.countByFollowingId(user.id!!),
+                followingCount = followRepository.countByFollowerId(user.id!!)
             )
         }
 
     override fun findUserWithFollowCount(userId: Long): UserWithFollowCountResult? =
-        userQueryRepository.findUserWithFollowCount(userId)?.let { dto ->
+        findById(userId)?.let { user ->
             UserWithFollowCountResult(
-                userId = dto.userId,
-                email = dto.email,
-                nickname = dto.nickname,
-                profileImageUrl = dto.profileImageUrl,
-                bio = dto.bio,
-                followerCount = dto.followerCount,
-                followingCount = dto.followingCount
+                userId = user.id ?: throw CustomException(ErrorCode.COMMON_INTERNAL_SERVER_ERROR, "사용자 ID가 없습니다."),
+                email = user.email,
+                nickname = user.nickname,
+                profileImageUrl = user.profileImageUrl,
+                bio = user.bio,
+                followerCount = followRepository.countByFollowingId(userId),
+                followingCount = followRepository.countByFollowerId(userId)
             )
         }
 }

@@ -1,6 +1,8 @@
 package com.onuldo.application.hobby
 
+import com.onuldo.common.exception.CustomException
 import com.onuldo.common.exception.DuplicateResourceException
+import com.onuldo.common.exception.ErrorCode
 import com.onuldo.domain.hobby.Hobby
 import com.onuldo.port.inbound.hobby.model.CreateHobbyCommand
 import com.onuldo.port.inbound.hobby.model.HobbyResponse
@@ -31,7 +33,7 @@ class CreateHobbyService(
         val savedHobby = hobbyRepository.save(hobby)
 
         return HobbyResponse(
-            id = savedHobby.id ?: throw IllegalStateException("취미 ID가 없습니다."),
+            id = savedHobby.id ?: throw CustomException(ErrorCode.COMMON_INTERNAL_SERVER_ERROR, "취미 ID가 없습니다."),
             userId = savedHobby.userId,
             name = savedHobby.name,
             description = savedHobby.description,

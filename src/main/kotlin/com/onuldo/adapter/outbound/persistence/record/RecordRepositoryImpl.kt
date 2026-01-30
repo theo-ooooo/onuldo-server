@@ -23,6 +23,10 @@ class RecordRepositoryImpl(
         return recordJpaRepository.findByUserId(userId)
     }
 
+    override fun findByUserIdAndHobbyId(userId: Long, hobbyId: Long): List<Record> {
+        return recordJpaRepository.findByUserIdAndHobbyId(userId, hobbyId)
+    }
+
     override fun findByUserIdAndActivityDate(userId: Long, date: LocalDate): List<Record> {
         return recordJpaRepository.findByUserIdAndActivityDate(userId, date)
     }

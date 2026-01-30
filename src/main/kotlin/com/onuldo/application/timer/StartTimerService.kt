@@ -44,11 +44,11 @@ class StartTimerService(
 
     private fun toResponse(timer: Timer): TimerResponse {
         return TimerResponse(
-            id = timer.id ?: throw IllegalStateException("타이머 ID가 없습니다."),
+            id = timer.id ?: throw CustomException(ErrorCode.COMMON_INTERNAL_SERVER_ERROR, "타이머 ID가 없습니다."),
             hobbyId = timer.hobbyId,
             startTime = timer.startTime,
             endTime = timer.endTime,
-            durationSeconds = timer.getCurrentDuration(),
+            durationSeconds = timer.getCurrentDuration().toInt(),
             status = timer.status
         )
     }

@@ -1,6 +1,8 @@
 package com.onuldo.common.security
 
 import com.onuldo.common.config.JwtProperties
+import com.onuldo.common.exception.CustomException
+import com.onuldo.common.exception.ErrorCode
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
@@ -27,14 +29,16 @@ class JwtTokenProvider(
 
     private val key: Key = run {
         val secret = jwtProperties.secret
-            ?: throw IllegalStateException(
+            ?: throw CustomException(
+                ErrorCode.COMMON_INTERNAL_SERVER_ERROR,
                 "JWT secret이 설정되지 않았습니다. 환경 변수 JWT_SECRET 또는 application.yml의 jwt.secret을 설정해주세요."
             )
         
         // JWT HMAC-SHA256은 최소 256비트(32바이트)가 필요합니다
         val secretBytes = secret.toByteArray(StandardCharsets.UTF_8)
         if (secretBytes.size < 32) {
-            throw IllegalStateException(
+            throw CustomException(
+                ErrorCode.COMMON_INTERNAL_SERVER_ERROR,
                 "JWT secret은 최소 32바이트(256비트) 이상이어야 합니다. 현재 길이: ${secretBytes.size}바이트"
             )
         }
