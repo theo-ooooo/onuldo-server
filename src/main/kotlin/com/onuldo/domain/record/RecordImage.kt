@@ -27,9 +27,6 @@ class RecordImage(
     @Column(name = "image_url", nullable = false, length = 500)
     val imageUrl: String,
 
-    @Column(name = "thumbnail_url", length = 500)
-    val thumbnailUrl: String? = null,
-
     @Column(name = "file_name", nullable = false, length = 255)
     val fileName: String,
 

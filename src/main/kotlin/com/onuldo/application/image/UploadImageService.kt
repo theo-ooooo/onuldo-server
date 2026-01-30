@@ -13,7 +13,6 @@ import com.onuldo.port.outbound.record.RecordRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
-import java.io.ByteArrayInputStream
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.UUID
@@ -65,30 +64,16 @@ class UploadImageService(
             throw CustomException(ErrorCode.COMMON_INTERNAL_SERVER_ERROR, "이미지 처리에 실패했습니다: ${e.message}")
         }
 
-        // Create thumbnail (WebP로 변환)
-        val thumbnailBytes = try {
-            ImageUtil.createThumbnailToWebP(ByteArrayInputStream(resizedImageBytes))
-        } catch (e: Exception) {
-            null
-        }
-
         // Save resized image (WebP 형식)
         val directory = "records/${recordId}"
         val contentType = "image/webp"
         val imageUrl = s3FileStorage.saveFile(resizedImageBytes, directory, fileName, contentType)
-
-        // Save thumbnail if created (WebP 형식)
-        val thumbnailUrl = thumbnailBytes?.let {
-            val thumbnailFileName = "thumb_$fileName"
-            s3FileStorage.saveFile(it, directory, thumbnailFileName, "image/webp")
-        }
 
         // Save record image entity
         val recordImage = RecordImage(
             userId = userId,
             recordId = recordId,
             imageUrl = imageUrl,
-            thumbnailUrl = thumbnailUrl,
             fileName = originalFileName,
             fileSize = file.size,
             contentType = "image/webp",
@@ -103,7 +88,6 @@ class UploadImageService(
         return ImageUploadResponse(
             imageId = imageId,
             imageUrl = imageUrl,
-            thumbnailUrl = thumbnailUrl,
             fileName = originalFileName,
             fileSize = file.size,
             width = width,
