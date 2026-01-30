@@ -7,9 +7,11 @@ import com.onuldo.common.util.ImageUtil
 import com.onuldo.domain.record.RecordImage
 import com.onuldo.port.inbound.image.model.ImageUploadResponse
 import com.onuldo.port.inbound.image.usecase.UploadImageUseCase
+import com.onuldo.adapter.outbound.storage.S3FileStorage
 import com.onuldo.port.outbound.record.RecordImageRepository
 import com.onuldo.port.outbound.record.RecordRepository
 import com.onuldo.port.outbound.storage.FileStorage
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
@@ -22,7 +24,7 @@ import java.util.UUID
 class UploadImageService(
     private val recordRepository: RecordRepository,
     private val recordImageRepository: RecordImageRepository,
-    private val fileStorage: FileStorage
+    @Qualifier("s3FileStorage") private val fileStorage: FileStorage
 ) : UploadImageUseCase {
 
     @Transactional
