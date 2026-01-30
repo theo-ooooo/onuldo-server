@@ -19,8 +19,7 @@ object ImageUtil {
     private const val THUMBNAIL_HEIGHT = 300
 
     init {
-        // TwelveMonkeys ImageIO는 자동으로 WebP 지원을 등록합니다
-        // 별도의 초기화가 필요하지 않습니다
+
     }
 
     /**

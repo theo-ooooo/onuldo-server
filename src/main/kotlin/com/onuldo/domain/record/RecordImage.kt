@@ -27,9 +27,6 @@ class RecordImage(
     @Column(name = "image_url", nullable = false, length = 500)
     val imageUrl: String,
 
-    @Column(name = "thumbnail_url", length = 500)
-    val thumbnailUrl: String? = null,
-
     @Column(name = "file_name", nullable = false, length = 255)
     val fileName: String,
 
@@ -43,9 +40,6 @@ class RecordImage(
     val width: Int? = null,
 
     @Column(name = "height")
-    val height: Int? = null,
-
-    @Column(name = "display_order", nullable = false)
-    var displayOrder: Int = 0
+    val height: Int? = null
 ) : BaseEntity()
 

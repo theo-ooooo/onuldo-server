@@ -32,6 +32,14 @@ class ConfirmImageUploadService(
             throw CustomException(ErrorCode.AUTH_FORBIDDEN, "기록에 이미지를 업로드할 권한이 없습니다.")
         }
 
+        // Check if record already has an image (한 레코드당 이미지 하나만 허용)
+        val existingImages = recordImageRepository.findByRecordId(command.recordId)
+        existingImages.forEach { existingImage ->
+            // 기존 이미지 삭제
+            s3FileStorage.deleteFile(existingImage.imageUrl)
+            recordImageRepository.deleteById(existingImage.id ?: return@forEach)
+        }
+
         // Verify file exists in S3
         val s3Storage = s3FileStorage as? S3FileStorage
             ?: throw CustomException(ErrorCode.COMMON_INTERNAL_SERVER_ERROR, "S3 스토리지가 설정되지 않았습니다.")
@@ -40,29 +48,19 @@ class ConfirmImageUploadService(
             throw CustomException(ErrorCode.COMMON_INVALID_INPUT, "업로드된 이미지를 찾을 수 없습니다.")
         }
 
-        // Generate thumbnail key
-        val thumbnailKey = command.imageKey.replace("/image_", "/thumb_")
-
-        // Generate presigned download URLs
+        // Generate presigned download URL
         val imageUrl = s3Storage.generatePresignedDownloadUrl(command.imageKey, 60 * 24 * 7) // 7일
-        val thumbnailUrl = if (s3FileStorage.exists(thumbnailKey)) {
-            s3Storage.generatePresignedDownloadUrl(thumbnailKey, 60 * 24 * 7)
-        } else {
-            null
-        }
 
         // Save record image entity
         val recordImage = RecordImage(
             userId = command.userId,
             recordId = command.recordId,
             imageUrl = command.imageKey, // S3 key 저장
-            thumbnailUrl = thumbnailKey.takeIf { s3FileStorage.exists(it) },
             fileName = command.fileName,
             fileSize = command.fileSize,
             contentType = "image/webp",
             width = command.width,
-            height = command.height,
-            displayOrder = recordImageRepository.findByRecordId(command.recordId).size
+            height = command.height
         )
 
         val savedImage = recordImageRepository.save(recordImage)
@@ -71,7 +69,6 @@ class ConfirmImageUploadService(
         return ImageUploadResponse(
             imageId = imageId,
             imageUrl = imageUrl, // Presigned URL 반환
-            thumbnailUrl = thumbnailUrl,
             fileName = command.fileName,
             fileSize = command.fileSize,
             width = command.width,

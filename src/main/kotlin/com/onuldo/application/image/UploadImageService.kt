@@ -35,6 +35,16 @@ class UploadImageService(
             throw CustomException(ErrorCode.AUTH_FORBIDDEN, "기록에 이미지를 업로드할 권한이 없습니다.")
         }
 
+        // Check if record already has an image (한 레코드당 이미지 하나만 허용)
+        val existingImages = recordImageRepository.findByRecordId(recordId)
+        if (existingImages.isNotEmpty()) {
+            // 기존 이미지 삭제
+            existingImages.forEach { existingImage ->
+                fileStorage.deleteFile(existingImage.imageUrl)
+                recordImageRepository.deleteById(existingImage.id ?: return@forEach)
+            }
+        }
+
         // Validate file
         if (!ImageUtil.validateImageFile(file)) {
             throw CustomException(ErrorCode.COMMON_INVALID_INPUT, "이미지 파일만 업로드할 수 있습니다.")
@@ -65,36 +75,21 @@ class UploadImageService(
             throw CustomException(ErrorCode.COMMON_INTERNAL_SERVER_ERROR, "이미지 처리에 실패했습니다: ${e.message}")
         }
 
-        // Create thumbnail (WebP로 변환)
-        val thumbnailBytes = try {
-            ImageUtil.createThumbnailToWebP(ByteArrayInputStream(resizedImageBytes))
-        } catch (e: Exception) {
-            null
-        }
-
         // Save resized image (WebP 형식)
         val directory = "records/${recordId}"
         val contentType = "image/webp"
         val imageUrl = fileStorage.saveFile(resizedImageBytes, directory, fileName, contentType)
-
-        // Save thumbnail if created (WebP 형식)
-        val thumbnailUrl = thumbnailBytes?.let {
-            val thumbnailFileName = "thumb_$fileName"
-            fileStorage.saveFile(it, directory, thumbnailFileName, "image/webp")
-        }
 
         // Save record image entity
         val recordImage = RecordImage(
             userId = userId,
             recordId = recordId,
             imageUrl = imageUrl,
-            thumbnailUrl = thumbnailUrl,
             fileName = originalFileName,
             fileSize = file.size,
             contentType = "image/webp",
             width = width,
-            height = height,
-            displayOrder = recordImageRepository.findByRecordId(recordId).size
+            height = height
         )
 
         val savedImage = recordImageRepository.save(recordImage)
@@ -103,7 +98,6 @@ class UploadImageService(
         return ImageUploadResponse(
             imageId = imageId,
             imageUrl = imageUrl,
-            thumbnailUrl = thumbnailUrl,
             fileName = originalFileName,
             fileSize = file.size,
             width = width,
