@@ -22,9 +22,8 @@ class ResumeTimerService(
             ?: throw ResourceNotFoundException("일시정지된 타이머")
 
         timer.resume()
-        val savedTimer = timerRepository.save(timer)
 
-        return toResponse(savedTimer)
+        return toResponse(timer)
     }
 
     private fun toResponse(timer: Timer): TimerResponse {

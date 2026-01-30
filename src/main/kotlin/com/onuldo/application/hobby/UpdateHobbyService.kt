@@ -34,15 +34,13 @@ class UpdateHobbyService(
             colorCode = command.colorCode
         )
 
-        val savedHobby = hobbyRepository.save(hobby)
-
         return HobbyResponse(
-            id = savedHobby.id ?: throw CustomException(ErrorCode.COMMON_INTERNAL_SERVER_ERROR, "취미 ID가 없습니다."),
-            userId = savedHobby.userId,
-            name = savedHobby.name,
-            description = savedHobby.description,
-            iconUrl = savedHobby.iconUrl,
-            colorCode = savedHobby.colorCode
+            id = hobby.id ?: throw CustomException(ErrorCode.COMMON_INTERNAL_SERVER_ERROR, "취미 ID가 없습니다."),
+            userId = hobby.userId,
+            name = hobby.name,
+            description = hobby.description,
+            iconUrl = hobby.iconUrl,
+            colorCode = hobby.colorCode
         )
     }
 }

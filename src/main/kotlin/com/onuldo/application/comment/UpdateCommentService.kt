@@ -31,29 +31,28 @@ class UpdateCommentService(
         }
 
         comment.updateContent(content)
-        val savedComment = commentRepository.save(comment)
 
         val user = userRepository.findById(userId)
             ?: throw ResourceNotFoundException("사용자", userId, ErrorCode.USER_NOT_FOUND)
 
-        val replyCount = if (savedComment.parentCommentId == null) {
+        val replyCount = if (comment.parentCommentId == null) {
             commentRepository.findByParentCommentId(commentId).size.toInt()
         } else {
             0
         }
 
         return CommentResponse(
-            id = savedComment.id ?: throw CustomException(ErrorCode.COMMON_INTERNAL_SERVER_ERROR, "댓글 ID가 없습니다."),
-            userId = savedComment.userId,
+            id = comment.id ?: throw CustomException(ErrorCode.COMMON_INTERNAL_SERVER_ERROR, "댓글 ID가 없습니다."),
+            userId = comment.userId,
             userNickname = user.nickname,
             userProfileImageUrl = user.profileImageUrl,
-            recordId = savedComment.recordId,
-            parentCommentId = savedComment.parentCommentId,
-            content = savedComment.content,
+            recordId = comment.recordId,
+            parentCommentId = comment.parentCommentId,
+            content = comment.content,
             replyCount = replyCount,
             replies = emptyList(),
-            createdAt = savedComment.createdAt ?: throw CustomException(ErrorCode.COMMON_INTERNAL_SERVER_ERROR, "생성 시간이 없습니다."),
-            updatedAt = savedComment.updatedAt ?: throw CustomException(ErrorCode.COMMON_INTERNAL_SERVER_ERROR, "수정 시간이 없습니다.")
+            createdAt = comment.createdAt ?: throw CustomException(ErrorCode.COMMON_INTERNAL_SERVER_ERROR, "생성 시간이 없습니다."),
+            updatedAt = comment.updatedAt ?: throw CustomException(ErrorCode.COMMON_INTERNAL_SERVER_ERROR, "수정 시간이 없습니다.")
         )
     }
 }

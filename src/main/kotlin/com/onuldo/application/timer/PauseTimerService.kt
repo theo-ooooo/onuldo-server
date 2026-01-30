@@ -21,9 +21,8 @@ class PauseTimerService(
             ?: throw ResourceNotFoundException("활성 타이머")
 
         timer.pause()
-        val savedTimer = timerRepository.save(timer)
 
-        return toResponse(savedTimer)
+        return toResponse(timer)
     }
 
     private fun toResponse(timer: Timer): TimerResponse {

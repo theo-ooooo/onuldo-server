@@ -28,7 +28,6 @@ class DeleteCommentService(
         }
 
         comment.delete()
-        commentRepository.save(comment)
     }
 }
 
