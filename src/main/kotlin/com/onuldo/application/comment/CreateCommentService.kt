@@ -1,5 +1,6 @@
 package com.onuldo.application.comment
 
+import com.onuldo.application.notification.CreateNotificationService
 import com.onuldo.common.exception.CustomException
 import com.onuldo.common.exception.ErrorCode
 import com.onuldo.common.exception.ResourceNotFoundException
@@ -17,7 +18,8 @@ import org.springframework.transaction.annotation.Transactional
 class CreateCommentService(
     private val commentRepository: CommentRepository,
     private val recordRepository: RecordRepository,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val createNotificationService: CreateNotificationService
 ) : CreateCommentUseCase {
 
     @Transactional
@@ -48,6 +50,20 @@ class CreateCommentService(
         // Get user info
         val user = userRepository.findById(command.userId)
             ?: throw ResourceNotFoundException("사용자", command.userId, ErrorCode.USER_NOT_FOUND)
+
+        // 알림 생성 (비동기)
+        val record = recordRepository.findById(command.recordId)
+        if (record != null && record.userId != command.userId) {
+            val isReply = command.parentCommentId != null
+            createNotificationService.createCommentNotification(
+                recordOwnerId = record.userId,
+                actorUserId = command.userId,
+                actorNickname = user.nickname,
+                recordId = command.recordId,
+                commentId = commentId,
+                isReply = isReply
+            )
+        }
 
         return CommentResponse(
             id = commentId,

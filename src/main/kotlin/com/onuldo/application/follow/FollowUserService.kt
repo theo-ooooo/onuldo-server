@@ -1,5 +1,6 @@
 package com.onuldo.application.follow
 
+import com.onuldo.application.notification.CreateNotificationService
 import com.onuldo.common.exception.CustomException
 import com.onuldo.common.exception.ErrorCode
 import com.onuldo.common.exception.ResourceNotFoundException
@@ -13,7 +14,8 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class FollowUserService(
     private val followRepository: FollowRepository,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val createNotificationService: CreateNotificationService
 ) : FollowUserUseCase {
 
     @Transactional
@@ -35,5 +37,15 @@ class FollowUserService(
         )
 
         followRepository.save(follow)
+
+        // 알림 생성 (비동기)
+        val follower = userRepository.findById(followerId)
+        if (follower != null) {
+            createNotificationService.createFollowNotification(
+                followingId = followingId,
+                followerId = followerId,
+                followerNickname = follower.nickname
+            )
+        }
     }
 }
