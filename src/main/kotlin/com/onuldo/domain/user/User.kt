@@ -40,7 +40,10 @@ class User(
     var profileImageUrl: String? = null,
 
     @Column(name = "bio", length = 255)
-    var bio: String? = null
+    var bio: String? = null,
+
+    @Column(name = "fcm_token", length = 500)
+    var fcmToken: String? = null
 ) : BaseEntity() {
 
     fun changeNickname(newNickname: String) {
@@ -65,6 +68,10 @@ class User(
 
     fun delete() {
         this.status = UserStatus.DELETED
+    }
+
+    fun updateFcmToken(token: String?) {
+        this.fcmToken = token
     }
 }
 

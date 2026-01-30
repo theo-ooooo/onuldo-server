@@ -15,6 +15,7 @@ spring:
       - aws
       - docs
       - datasource
+      - fcm
 
 
 logging:

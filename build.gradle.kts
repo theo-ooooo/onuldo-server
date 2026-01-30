@@ -64,6 +64,9 @@ dependencies {
     // WebP 이미지 처리
     implementation("com.twelvemonkeys.imageio:imageio-webp:3.10.1")
 
+    // Firebase Admin SDK (FCM)
+    implementation("com.google.firebase:firebase-admin:9.2.0")
+
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 

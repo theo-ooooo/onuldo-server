@@ -1,0 +1,7 @@
+# FCM 설정
+fcm:
+  enabled: false  # FCM을 사용하려면 true로 설정
+  service-account-key-path: # Firebase 서비스 계정 키 파일 경로 (선택사항)
+    # 예: /path/to/service-account-key.json
+    # 또는 GOOGLE_APPLICATION_CREDENTIALS 환경 변수 사용 가능
+

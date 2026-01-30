@@ -9,14 +9,17 @@ import com.onuldo.port.inbound.follow.usecase.GetFollowCountUseCase
 import com.onuldo.port.inbound.follow.usecase.GetFollowersUseCase
 import com.onuldo.port.inbound.follow.usecase.GetFollowingUseCase
 import com.onuldo.port.inbound.follow.usecase.UnfollowUserUseCase
+import com.onuldo.adapter.inbound.web.dto.UpdateFcmTokenRequest
 import com.onuldo.port.inbound.user.model.UserResponse
 import com.onuldo.port.inbound.user.usecase.GetMyInfoUseCase
 import com.onuldo.port.inbound.user.usecase.GetUserUseCase
 import com.onuldo.port.inbound.user.usecase.SearchUsersUseCase
+import com.onuldo.port.inbound.user.usecase.UpdateFcmTokenUseCase
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.HttpStatus
+import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
 
 @Tag(name = "User", description = "사용자 API")
@@ -31,7 +34,8 @@ class UserController(
     private val unfollowUserUseCase: UnfollowUserUseCase,
     private val getFollowersUseCase: GetFollowersUseCase,
     private val getFollowingUseCase: GetFollowingUseCase,
-    private val getFollowCountUseCase: GetFollowCountUseCase
+    private val getFollowCountUseCase: GetFollowCountUseCase,
+    private val updateFcmTokenUseCase: UpdateFcmTokenUseCase
 ) {
 
     @Operation(summary = "내 정보 조회", description = "현재 로그인한 사용자의 정보를 조회합니다.")
@@ -111,5 +115,16 @@ class UserController(
     fun getFollowCount(@PathVariable userId: Long): ApiResponse<FollowCountResponse> {
         val count = getFollowCountUseCase.execute(userId)
         return ApiResponse.success(count, message = "팔로우 수를 조회했습니다.")
+    }
+
+    @Operation(summary = "FCM 토큰 업데이트", description = "현재 로그인한 사용자의 FCM 토큰을 업데이트합니다.")
+    @PutMapping("/me/fcm-token")
+    fun updateFcmToken(
+        request: HttpServletRequest,
+        @Validated @RequestBody updateRequest: UpdateFcmTokenRequest
+    ): ApiResponse<Unit> {
+        val currentUserId = securityUtils.getCurrentUserId(request)
+        updateFcmTokenUseCase.execute(currentUserId, updateRequest.fcmToken)
+        return ApiResponse.success(message = "FCM 토큰을 업데이트했습니다.")
     }
 }
