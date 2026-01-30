@@ -11,7 +11,6 @@ import com.onuldo.common.exception.ErrorCode
 import com.onuldo.port.outbound.notification.PushNotificationService
 import com.onuldo.port.outbound.user.UserRepository
 import org.slf4j.LoggerFactory
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.stereotype.Service
 import java.io.FileInputStream
 import javax.annotation.PostConstruct
@@ -20,13 +19,13 @@ import javax.annotation.PostConstruct
  * FCM 푸시 알림 서비스 구현
  */
 @Service
-@ConditionalOnProperty(name = ["fcm.enabled"], havingValue = "true", matchIfMissing = false)
 class FcmPushNotificationService(
     private val fcmProperties: FcmProperties,
     private val userRepository: UserRepository
 ) : PushNotificationService {
 
     private val logger = LoggerFactory.getLogger(javaClass)
+    private var isInitialized = false
 
     @PostConstruct
     fun initialize() {
@@ -46,16 +45,15 @@ class FcmPushNotificationService(
                         .build()
                 }
                 FirebaseApp.initializeApp(options)
+                isInitialized = true
                 logger.info("Firebase Admin SDK initialized successfully")
             } else {
+                isInitialized = true
                 logger.info("Firebase Admin SDK already initialized")
             }
         } catch (e: Exception) {
-            logger.error("Failed to initialize Firebase Admin SDK", e)
-            throw CustomException(
-                ErrorCode.COMMON_INTERNAL_SERVER_ERROR,
-                "FCM 초기화에 실패했습니다: ${e.message}"
-            )
+            logger.warn("Failed to initialize Firebase Admin SDK. Push notifications will be disabled: ${e.message}")
+            isInitialized = false
         }
     }
 
@@ -65,6 +63,12 @@ class FcmPushNotificationService(
         body: String,
         data: Map<String, String>?
     ) {
+        // FCM이 초기화되지 않은 경우 아무 작업도 하지 않음
+        if (!isInitialized || FirebaseApp.getApps().isEmpty()) {
+            logger.debug("FCM is not initialized, skipping push notification")
+            return
+        }
+
         try {
             // 사용자 조회 및 FCM 토큰 확인
             val user = userRepository.findById(userId)
