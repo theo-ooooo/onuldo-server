@@ -30,3 +30,4 @@ class RecordTag(
     val tagId: Long
 ) : BaseEntity()
 
+

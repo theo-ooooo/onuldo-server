@@ -12,3 +12,4 @@ interface HobbyRepository {
     fun existsByNameAndUserIdAndIdNot(name: String, userId: Long, excludeId: Long): Boolean
 }
 
+

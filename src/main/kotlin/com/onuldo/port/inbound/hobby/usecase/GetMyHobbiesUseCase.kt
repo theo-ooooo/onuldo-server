@@ -6,3 +6,4 @@ interface GetMyHobbiesUseCase {
     fun execute(userId: Long): List<HobbyResponse>
 }
 
+
