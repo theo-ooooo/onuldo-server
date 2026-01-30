@@ -1,13 +1,12 @@
 package com.onuldo.application.image
 
+import com.onuldo.adapter.outbound.storage.S3FileStorage
 import com.onuldo.common.exception.CustomException
 import com.onuldo.common.exception.ErrorCode
 import com.onuldo.common.exception.ResourceNotFoundException
 import com.onuldo.port.inbound.image.model.PresignedUploadUrlResponse
 import com.onuldo.port.inbound.image.usecase.GeneratePresignedUploadUrlUseCase
 import com.onuldo.port.outbound.record.RecordRepository
-import com.onuldo.port.outbound.storage.FileStorage
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
@@ -17,7 +16,7 @@ import java.util.UUID
 @Service
 class GeneratePresignedUploadUrlService(
     private val recordRepository: RecordRepository,
-    @Qualifier("s3FileStorage") private val s3FileStorage: FileStorage
+    private val s3FileStorage: S3FileStorage
 ) : GeneratePresignedUploadUrlUseCase {
 
     @Transactional(readOnly = true)
@@ -38,10 +37,7 @@ class GeneratePresignedUploadUrlService(
         val imageKey = "records/${recordId}/image_${timestamp}_${uuid}.${extension}"
 
         // Generate presigned URL
-        val s3Storage = s3FileStorage as? com.onuldo.adapter.outbound.storage.S3FileStorage
-            ?: throw CustomException(ErrorCode.COMMON_INTERNAL_SERVER_ERROR, "S3 스토리지가 설정되지 않았습니다.")
-
-        val uploadUrl = s3Storage.generatePresignedUploadUrl(imageKey, "image/webp", 5)
+        val uploadUrl = s3FileStorage.generatePresignedUploadUrl(imageKey, "image/webp", 5)
 
         return PresignedUploadUrlResponse(
             uploadUrl = uploadUrl,

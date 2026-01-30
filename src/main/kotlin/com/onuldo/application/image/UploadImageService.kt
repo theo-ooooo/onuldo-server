@@ -10,8 +10,6 @@ import com.onuldo.port.inbound.image.usecase.UploadImageUseCase
 import com.onuldo.adapter.outbound.storage.S3FileStorage
 import com.onuldo.port.outbound.record.RecordImageRepository
 import com.onuldo.port.outbound.record.RecordRepository
-import com.onuldo.port.outbound.storage.FileStorage
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
@@ -24,7 +22,7 @@ import java.util.UUID
 class UploadImageService(
     private val recordRepository: RecordRepository,
     private val recordImageRepository: RecordImageRepository,
-    @Qualifier("s3FileStorage") private val fileStorage: FileStorage
+    private val s3FileStorage: S3FileStorage
 ) : UploadImageUseCase {
 
     @Transactional
@@ -77,12 +75,12 @@ class UploadImageService(
         // Save resized image (WebP 형식)
         val directory = "records/${recordId}"
         val contentType = "image/webp"
-        val imageUrl = fileStorage.saveFile(resizedImageBytes, directory, fileName, contentType)
+        val imageUrl = s3FileStorage.saveFile(resizedImageBytes, directory, fileName, contentType)
 
         // Save thumbnail if created (WebP 형식)
         val thumbnailUrl = thumbnailBytes?.let {
             val thumbnailFileName = "thumb_$fileName"
-            fileStorage.saveFile(it, directory, thumbnailFileName, "image/webp")
+            s3FileStorage.saveFile(it, directory, thumbnailFileName, "image/webp")
         }
 
         // Save record image entity

@@ -1,9 +1,9 @@
 package com.onuldo.adapter.outbound.storage
 
+import com.onuldo.common.config.S3Properties
 import com.onuldo.common.exception.CustomException
 import com.onuldo.common.exception.ErrorCode
 import com.onuldo.port.outbound.storage.FileStorage
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import org.springframework.web.multipart.MultipartFile
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider
@@ -18,26 +18,23 @@ import java.time.Duration
 
 @Component("s3FileStorage")
 class S3FileStorage(
-    @Value("\${aws.s3.bucket}")
-    private val bucketName: String,
-    @Value("\${aws.region:ap-northeast-2}")
-    private val region: String
+    private val s3Properties: S3Properties
 ) : FileStorage {
 
     private val s3Client: S3Client = S3Client.builder()
-        .region(Region.of(region))
+        .region(Region.of(s3Properties.region))
         .credentialsProvider(DefaultCredentialsProvider.create())
         .build()
 
     private val s3Presigner: S3Presigner = S3Presigner.builder()
-        .region(Region.of(region))
+        .region(Region.of(s3Properties.region))
         .credentialsProvider(DefaultCredentialsProvider.create())
         .build()
 
     override fun saveFile(file: MultipartFile, directory: String, fileName: String): String {
         val key = "$directory/$fileName"
         val putObjectRequest = PutObjectRequest.builder()
-            .bucket(bucketName)
+            .bucket(s3Properties.bucket)
             .key(key)
             .contentType(file.contentType)
             .build()
@@ -53,7 +50,7 @@ class S3FileStorage(
     override fun saveFile(bytes: ByteArray, directory: String, fileName: String, contentType: String): String {
         val key = "$directory/$fileName"
         val putObjectRequest = PutObjectRequest.builder()
-            .bucket(bucketName)
+            .bucket(s3Properties.bucket)
             .key(key)
             .contentType(contentType)
             .build()
@@ -72,7 +69,7 @@ class S3FileStorage(
      */
     fun generatePresignedUploadUrl(key: String, contentType: String, expirationMinutes: Int = 5): String {
         val putObjectRequest = PutObjectRequest.builder()
-            .bucket(bucketName)
+            .bucket(s3Properties.bucket)
             .key(key)
             .contentType(contentType)
             .build()
@@ -91,7 +88,7 @@ class S3FileStorage(
      */
     fun generatePresignedDownloadUrl(key: String, expirationMinutes: Int = 60): String {
         val getObjectRequest = software.amazon.awssdk.services.s3.model.GetObjectRequest.builder()
-            .bucket(bucketName)
+            .bucket(s3Properties.bucket)
             .key(key)
             .build()
 
@@ -107,7 +104,7 @@ class S3FileStorage(
     override fun deleteFile(fileUrl: String) {
         try {
             val deleteObjectRequest = DeleteObjectRequest.builder()
-                .bucket(bucketName)
+                .bucket(s3Properties.bucket)
                 .key(fileUrl)
                 .build()
             s3Client.deleteObject(deleteObjectRequest)
@@ -119,7 +116,7 @@ class S3FileStorage(
     override fun exists(fileUrl: String): Boolean {
         return try {
             val headObjectRequest = HeadObjectRequest.builder()
-                .bucket(bucketName)
+                .bucket(s3Properties.bucket)
                 .key(fileUrl)
                 .build()
             s3Client.headObject(headObjectRequest)

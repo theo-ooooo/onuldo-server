@@ -10,8 +10,6 @@ import com.onuldo.port.inbound.image.model.ImageUploadResponse
 import com.onuldo.port.inbound.image.usecase.ConfirmImageUploadUseCase
 import com.onuldo.port.outbound.record.RecordImageRepository
 import com.onuldo.port.outbound.record.RecordRepository
-import com.onuldo.port.outbound.storage.FileStorage
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -19,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional
 class ConfirmImageUploadService(
     private val recordRepository: RecordRepository,
     private val recordImageRepository: RecordImageRepository,
-    @Qualifier("s3FileStorage") private val s3FileStorage: FileStorage
+    private val s3FileStorage: S3FileStorage
 ) : ConfirmImageUploadUseCase {
 
     @Transactional
@@ -33,9 +31,6 @@ class ConfirmImageUploadService(
         }
 
         // Verify file exists in S3
-        val s3Storage = s3FileStorage as? S3FileStorage
-            ?: throw CustomException(ErrorCode.COMMON_INTERNAL_SERVER_ERROR, "S3 스토리지가 설정되지 않았습니다.")
-
         if (!s3FileStorage.exists(command.imageKey)) {
             throw CustomException(ErrorCode.COMMON_INVALID_INPUT, "업로드된 이미지를 찾을 수 없습니다.")
         }
@@ -44,9 +39,9 @@ class ConfirmImageUploadService(
         val thumbnailKey = command.imageKey.replace("/image_", "/thumb_")
 
         // Generate presigned download URLs
-        val imageUrl = s3Storage.generatePresignedDownloadUrl(command.imageKey, 60 * 24 * 7) // 7일
+        val imageUrl = s3FileStorage.generatePresignedDownloadUrl(command.imageKey, 60 * 24 * 7) // 7일
         val thumbnailUrl = if (s3FileStorage.exists(thumbnailKey)) {
-            s3Storage.generatePresignedDownloadUrl(thumbnailKey, 60 * 24 * 7)
+            s3FileStorage.generatePresignedDownloadUrl(thumbnailKey, 60 * 24 * 7)
         } else {
             null
         }
