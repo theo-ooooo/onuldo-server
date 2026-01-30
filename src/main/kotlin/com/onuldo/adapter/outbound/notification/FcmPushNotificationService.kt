@@ -107,7 +107,8 @@ class FcmPushNotificationService(
         } catch (e: com.google.firebase.messaging.FirebaseMessagingException) {
             logger.error("Failed to send FCM message to user $userId", e)
             // FCM 토큰이 유효하지 않은 경우 사용자의 FCM 토큰 제거
-            if (e.errorCode == "invalid-argument" || e.errorCode == "registration-token-not-registered") {
+            if (e.messagingErrorCode == com.google.firebase.messaging.MessagingErrorCode.INVALID_ARGUMENT ||
+                e.messagingErrorCode == com.google.firebase.messaging.MessagingErrorCode.UNREGISTERED) {
                 try {
                     val user = userRepository.findById(userId)
                     user?.updateFcmToken(null)
