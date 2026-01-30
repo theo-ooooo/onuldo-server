@@ -12,8 +12,8 @@ class DeleteHobbyService(
 ) : DeleteHobbyUseCase {
 
     @Transactional
-    override fun execute(id: Long) {
-        val hobby = hobbyRepository.findById(id)
+    override fun execute(id: Long, userId: Long) {
+        val hobby = hobbyRepository.findByIdAndUserId(id, userId)
             ?: throw ResourceNotFoundException("취미", id)
 
         hobby.deactivate()

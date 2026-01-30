@@ -15,12 +15,13 @@ class CreateHobbyService(
 ) : CreateHobbyUseCase {
 
     @Transactional
-    override fun execute(command: CreateHobbyCommand): HobbyResponse {
-        if (hobbyRepository.existsByName(command.name)) {
+    override fun execute(userId: Long, command: CreateHobbyCommand): HobbyResponse {
+        if (hobbyRepository.existsByNameAndUserId(command.name, userId)) {
             throw DuplicateResourceException("취미", "이미 존재하는 취미입니다: ${command.name}")
         }
 
         val hobby = Hobby(
+            userId = userId,
             name = command.name,
             description = command.description,
             iconUrl = command.iconUrl,
@@ -31,6 +32,7 @@ class CreateHobbyService(
 
         return HobbyResponse(
             id = savedHobby.id ?: throw IllegalStateException("취미 ID가 없습니다."),
+            userId = savedHobby.userId,
             name = savedHobby.name,
             description = savedHobby.description,
             iconUrl = savedHobby.iconUrl,

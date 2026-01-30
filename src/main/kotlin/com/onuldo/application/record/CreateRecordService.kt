@@ -11,6 +11,7 @@ import com.onuldo.port.outbound.hobby.HobbyRepository
 import com.onuldo.port.outbound.record.RecordRepository
 import com.onuldo.port.outbound.tag.RecordTagRepository
 import com.onuldo.port.outbound.tag.TagRepository
+import com.onuldo.port.outbound.userhobby.UserHobbyRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -19,7 +20,8 @@ class CreateRecordService(
     private val recordRepository: RecordRepository,
     private val hobbyRepository: HobbyRepository,
     private val tagRepository: TagRepository,
-    private val recordTagRepository: RecordTagRepository
+    private val recordTagRepository: RecordTagRepository,
+    private val userHobbyRepository: UserHobbyRepository
 ) : CreateRecordUseCase {
 
     @Transactional
@@ -41,6 +43,11 @@ class CreateRecordService(
 
         val savedRecord = recordRepository.save(record)
         val recordId = savedRecord.id ?: throw IllegalStateException("기록 ID가 없습니다.")
+
+        // Update user hobby statistics
+        val userHobby = userHobbyRepository.findOrCreate(command.userId, command.hobbyId)
+        userHobby.addRecord(command.durationSeconds)
+        userHobbyRepository.save(userHobby)
 
         // Process tags
         val tagNames = processTags(command.tagNames, recordId)

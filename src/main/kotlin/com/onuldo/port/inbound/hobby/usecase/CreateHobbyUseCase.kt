@@ -4,5 +4,5 @@ import com.onuldo.port.inbound.hobby.model.CreateHobbyCommand
 import com.onuldo.port.inbound.hobby.model.HobbyResponse
 
 interface CreateHobbyUseCase {
-    fun execute(command: CreateHobbyCommand): HobbyResponse
+    fun execute(userId: Long, command: CreateHobbyCommand): HobbyResponse
 }
