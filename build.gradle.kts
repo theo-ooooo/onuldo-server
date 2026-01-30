@@ -57,6 +57,13 @@ dependencies {
     // H2
     runtimeOnly("com.h2database:h2")
 
+    // AWS S3
+    implementation("software.amazon.awssdk:s3:2.20.0")
+    implementation("software.amazon.awssdk:auth:2.20.0")
+
+    // WebP 이미지 처리
+    implementation("com.twelvemonkeys.imageio:imageio-webp:3.10.1")
+
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 
