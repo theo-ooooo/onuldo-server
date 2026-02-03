@@ -38,6 +38,10 @@ class ReactionRepositoryImpl(
         return reactionJpaRepository.findAllByRecordId(recordId)
     }
 
+    override fun findAllByUserIdAndRecordId(userId: Long, recordId: Long): List<Reaction> {
+        return reactionJpaRepository.findAllByUserIdAndRecordId(userId, recordId)
+    }
+
     override fun countByRecordIdGroupByEmojiType(recordId: Long): Map<EmojiType, Long> {
         return reactionJpaRepository.countByRecordIdGroupByEmojiType(recordId)
             .associate { it[0] as EmojiType to it[1] as Long }

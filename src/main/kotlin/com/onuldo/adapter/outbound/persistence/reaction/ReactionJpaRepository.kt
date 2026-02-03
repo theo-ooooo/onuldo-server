@@ -9,6 +9,7 @@ interface ReactionJpaRepository : JpaRepository<Reaction, Long> {
     fun findByUserIdAndRecordIdAndEmojiType(userId: Long, recordId: Long, emojiType: EmojiType): Reaction?
     fun existsByUserIdAndRecordIdAndEmojiType(userId: Long, recordId: Long, emojiType: EmojiType): Boolean
     fun findAllByRecordId(recordId: Long): List<Reaction>
+    fun findAllByUserIdAndRecordId(userId: Long, recordId: Long): List<Reaction>
 
     @Query("SELECT r.emojiType, COUNT(r) FROM Reaction r WHERE r.recordId = :recordId GROUP BY r.emojiType")
     fun countByRecordIdGroupByEmojiType(recordId: Long): List<Array<Any>>

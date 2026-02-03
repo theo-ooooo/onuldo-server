@@ -9,5 +9,6 @@ interface ReactionRepository {
     fun findByUserIdAndRecordIdAndEmojiType(userId: Long, recordId: Long, emojiType: EmojiType): Reaction?
     fun existsByUserIdAndRecordIdAndEmojiType(userId: Long, recordId: Long, emojiType: EmojiType): Boolean
     fun findAllByRecordId(recordId: Long): List<Reaction>
+    fun findAllByUserIdAndRecordId(userId: Long, recordId: Long): List<Reaction>
     fun countByRecordIdGroupByEmojiType(recordId: Long): Map<EmojiType, Long>
 }
