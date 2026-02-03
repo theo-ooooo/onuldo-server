@@ -9,6 +9,7 @@ import com.onuldo.port.inbound.reaction.model.ReactionCountResponse
 import com.onuldo.port.inbound.reaction.model.ReactionResponse
 import com.onuldo.port.inbound.reaction.model.ReactionWithUserResponse
 import com.onuldo.port.inbound.reaction.usecase.AddReactionUseCase
+import com.onuldo.port.inbound.reaction.usecase.GetMyReactionsUseCase
 import com.onuldo.port.inbound.reaction.usecase.GetReactionCountUseCase
 import com.onuldo.port.inbound.reaction.usecase.GetReactionsUseCase
 import com.onuldo.port.inbound.reaction.usecase.RemoveReactionUseCase
@@ -27,6 +28,7 @@ class ReactionController(
     private val addReactionUseCase: AddReactionUseCase,
     private val removeReactionUseCase: RemoveReactionUseCase,
     private val getReactionsUseCase: GetReactionsUseCase,
+    private val getMyReactionsUseCase: GetMyReactionsUseCase,
     private val getReactionCountUseCase: GetReactionCountUseCase
 ) {
 
@@ -66,6 +68,17 @@ class ReactionController(
     fun getReactions(@PathVariable recordId: Long): ApiResponse<List<ReactionWithUserResponse>> {
         val reactions = getReactionsUseCase.execute(recordId)
         return ApiResponse.success(reactions, message = "리액션 목록을 조회했습니다.")
+    }
+
+    @Operation(summary = "내 리액션 조회", description = "내가 해당 기록에 누른 리액션 목록을 조회합니다.")
+    @GetMapping("/me")
+    fun getMyReactions(
+        request: HttpServletRequest,
+        @PathVariable recordId: Long
+    ): ApiResponse<List<ReactionResponse>> {
+        val currentUserId = securityUtils.getCurrentUserId(request)
+        val reactions = getMyReactionsUseCase.execute(currentUserId, recordId)
+        return ApiResponse.success(reactions, message = "내 리액션 목록을 조회했습니다.")
     }
 
     @Operation(summary = "리액션 통계 조회", description = "기록의 리액션 통계를 조회합니다.")
