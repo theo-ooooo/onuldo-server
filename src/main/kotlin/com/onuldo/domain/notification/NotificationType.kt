@@ -7,3 +7,4 @@ enum class NotificationType {
     FOLLOW         // 팔로우 알림
 }
 
+

@@ -4,3 +4,4 @@ interface MarkNotificationAsReadUseCase {
     fun execute(userId: Long, notificationId: Long)
 }
 
+

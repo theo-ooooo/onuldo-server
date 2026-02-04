@@ -9,3 +9,4 @@ interface NotificationJpaRepository : JpaRepository<Notification, Long> {
     fun countByUserIdAndIsReadFalse(userId: Long): Long
 }
 
+
