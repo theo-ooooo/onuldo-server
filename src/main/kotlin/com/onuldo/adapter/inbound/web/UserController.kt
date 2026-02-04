@@ -78,7 +78,7 @@ class UserController(
 
     @Operation(summary = "사용자 언팔로우", description = "특정 사용자를 언팔로우합니다.")
     @DeleteMapping("/{userId}/follow")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseStatus(HttpStatus.OK)
     fun unfollowUser(
         request: HttpServletRequest,
         @PathVariable userId: Long

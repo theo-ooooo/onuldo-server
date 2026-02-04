@@ -8,3 +8,4 @@ data class S3Properties(
     val region: String = "ap-northeast-2"
 )
 
+
