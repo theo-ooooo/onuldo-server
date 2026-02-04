@@ -28,29 +28,44 @@ class FeedQueryRepository(
     fun findFeed(query: FeedQuery, followingIds: List<Long>): List<Record> {
         val whereConditions = mutableListOf<BooleanExpression>()
 
-        // Visibility condition
-        when (query.feedType) {
-            FeedType.ALL -> {
-                // Public records or own records
-                whereConditions.add(
-                    record.visibility.eq(RecordVisibility.PUBLIC)
-                        .or(record.userId.eq(query.userId))
-                )
-            }
-            FeedType.FOLLOWING -> {
-                // Following users' records (public + followers visibility)
-                if (followingIds.isEmpty()) {
-                    // No following users, return own records only
-                    whereConditions.add(record.userId.eq(query.userId))
+        // Profile feed (특정 사용자 피드)일 경우: 작성자 필터 + visibility 규칙
+        val targetUserId = query.targetUserId
+        if (targetUserId != null) {
+            whereConditions.add(record.userId.eq(targetUserId))
+
+            if (query.userId != targetUserId) {
+                // 타인 프로필: 팔로우 여부에 따라 공개 범위 결정
+                if (followingIds.contains(targetUserId)) {
+                    whereConditions.add(record.visibility.`in`(RecordVisibility.PUBLIC, RecordVisibility.FOLLOWERS))
                 } else {
+                    whereConditions.add(record.visibility.eq(RecordVisibility.PUBLIC))
+                }
+            }
+        } else {
+            // Visibility condition
+            when (query.feedType) {
+                FeedType.ALL -> {
+                    // Public records or own records
                     whereConditions.add(
-                        record.userId.`in`(followingIds + query.userId)
-                            .and(
-                                record.visibility.eq(RecordVisibility.PUBLIC)
-                                    .or(record.visibility.eq(RecordVisibility.FOLLOWERS))
-                                    .or(record.userId.eq(query.userId))
-                            )
+                        record.visibility.eq(RecordVisibility.PUBLIC)
+                            .or(record.userId.eq(query.userId))
                     )
+                }
+                FeedType.FOLLOWING -> {
+                    // Following users' records (public + followers visibility)
+                    if (followingIds.isEmpty()) {
+                        // No following users, return own records only
+                        whereConditions.add(record.userId.eq(query.userId))
+                    } else {
+                        whereConditions.add(
+                            record.userId.`in`(followingIds + query.userId)
+                                .and(
+                                    record.visibility.eq(RecordVisibility.PUBLIC)
+                                        .or(record.visibility.eq(RecordVisibility.FOLLOWERS))
+                                        .or(record.userId.eq(query.userId))
+                                )
+                        )
+                    }
                 }
             }
         }

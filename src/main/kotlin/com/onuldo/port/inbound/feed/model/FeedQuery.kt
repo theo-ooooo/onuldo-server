@@ -12,6 +12,8 @@ enum class FeedSortType {
 
 data class FeedQuery(
     val userId: Long,
+    // 프로필 피드 등 특정 사용자의 기록만 조회할 때 사용 (조회 대상 사용자 ID)
+    val targetUserId: Long? = null,
     val feedType: FeedType = FeedType.ALL,
     val sortType: FeedSortType = FeedSortType.LATEST,
     val hobbyId: Long? = null,
