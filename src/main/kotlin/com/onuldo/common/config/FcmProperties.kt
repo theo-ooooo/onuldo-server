@@ -11,3 +11,4 @@ data class FcmProperties(
     val serviceAccountKeyPath: String? = null
 )
 
+
