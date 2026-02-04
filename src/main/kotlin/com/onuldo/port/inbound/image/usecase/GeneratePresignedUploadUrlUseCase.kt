@@ -6,3 +6,4 @@ interface GeneratePresignedUploadUrlUseCase {
     fun execute(userId: Long, recordId: Long, fileName: String, contentType: String): PresignedUploadUrlResponse
 }
 
+

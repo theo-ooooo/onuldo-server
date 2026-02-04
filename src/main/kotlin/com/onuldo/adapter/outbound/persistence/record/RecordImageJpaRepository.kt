@@ -8,3 +8,4 @@ interface RecordImageJpaRepository : JpaRepository<RecordImage, Long> {
     fun deleteByRecordId(recordId: Long)
 }
 
+

@@ -10,3 +10,4 @@ interface RecordImageRepository {
     fun deleteByRecordId(recordId: Long)
 }
 
+

@@ -7,3 +7,4 @@ interface UploadImageUseCase {
     fun execute(userId: Long, recordId: Long, file: MultipartFile): ImageUploadResponse
 }
 
+
