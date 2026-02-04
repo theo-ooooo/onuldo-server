@@ -1,5 +1,6 @@
 package com.onuldo.port.inbound.feed.model
 
+import com.onuldo.domain.reaction.EmojiType
 import com.onuldo.domain.record.RecordVisibility
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -16,7 +17,7 @@ data class FeedItemResponse(
     val visibility: RecordVisibility,
     val activityDate: LocalDate,
     val tags: List<String>,
-    val reactionCount: Int,
+    val reactionCounts: Map<EmojiType, Long>,
     val commentCount: Int,
     val createdAt: LocalDateTime
 )
