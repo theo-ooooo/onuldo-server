@@ -9,14 +9,27 @@ import com.onuldo.port.inbound.follow.usecase.GetFollowCountUseCase
 import com.onuldo.port.inbound.follow.usecase.GetFollowersUseCase
 import com.onuldo.port.inbound.follow.usecase.GetFollowingUseCase
 import com.onuldo.port.inbound.follow.usecase.UnfollowUserUseCase
+import com.onuldo.adapter.inbound.web.dto.ChangePasswordRequest
+import com.onuldo.adapter.inbound.web.dto.ConfirmProfileImageUploadRequest
 import com.onuldo.adapter.inbound.web.dto.UpdateFcmTokenRequest
+import com.onuldo.adapter.inbound.web.dto.UpdateProfileRequest
+import com.onuldo.port.inbound.image.model.PresignedUploadUrlResponse
+import com.onuldo.port.inbound.user.model.ChangePasswordCommand
+import com.onuldo.port.inbound.user.model.ConfirmProfileImageUploadCommand
+import com.onuldo.port.inbound.user.model.ProfileImageUploadResponse
+import com.onuldo.port.inbound.user.model.UpdateProfileCommand
 import com.onuldo.port.inbound.user.model.UserResponse
+import com.onuldo.port.inbound.user.usecase.ChangePasswordUseCase
+import com.onuldo.port.inbound.user.usecase.ConfirmProfileImageUploadUseCase
+import com.onuldo.port.inbound.user.usecase.GenerateProfileImagePresignedUrlUseCase
 import com.onuldo.port.inbound.user.usecase.GetUserUseCase
 import com.onuldo.port.inbound.user.usecase.SearchUsersUseCase
 import com.onuldo.port.inbound.user.usecase.UpdateFcmTokenUseCase
+import com.onuldo.port.inbound.user.usecase.UpdateProfileUseCase
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.servlet.http.HttpServletRequest
+import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
@@ -33,7 +46,11 @@ class UserController(
     private val getFollowersUseCase: GetFollowersUseCase,
     private val getFollowingUseCase: GetFollowingUseCase,
     private val getFollowCountUseCase: GetFollowCountUseCase,
-    private val updateFcmTokenUseCase: UpdateFcmTokenUseCase
+    private val updateFcmTokenUseCase: UpdateFcmTokenUseCase,
+    private val updateProfileUseCase: UpdateProfileUseCase,
+    private val changePasswordUseCase: ChangePasswordUseCase,
+    private val generateProfileImagePresignedUrlUseCase: GenerateProfileImagePresignedUrlUseCase,
+    private val confirmProfileImageUploadUseCase: ConfirmProfileImageUploadUseCase
 ) {
 
     @Operation(summary = "내 정보 조회", description = "현재 로그인한 사용자의 정보를 조회합니다.")
@@ -124,5 +141,69 @@ class UserController(
         val currentUserId = securityUtils.getCurrentUserId(request)
         updateFcmTokenUseCase.execute(currentUserId, updateRequest.fcmToken)
         return ApiResponse.success(message = "FCM 토큰을 업데이트했습니다.")
+    }
+
+    @Operation(summary = "프로필 수정", description = "현재 로그인한 사용자의 프로필을 수정합니다. (닉네임, 소개 변경 가능)")
+    @PutMapping("/me/profile")
+    fun updateProfile(
+        request: HttpServletRequest,
+        @Validated @RequestBody updateRequest: UpdateProfileRequest
+    ): ApiResponse<Unit> {
+        val currentUserId = securityUtils.getCurrentUserId(request)
+        val command = UpdateProfileCommand(
+            userId = currentUserId,
+            nickname = updateRequest.nickname,
+            bio = updateRequest.bio
+        )
+        updateProfileUseCase.execute(command)
+        return ApiResponse.success(message = "프로필을 수정했습니다.")
+    }
+
+    @Operation(summary = "비밀번호 변경", description = "현재 로그인한 사용자의 비밀번호를 변경합니다.")
+    @PutMapping("/me/password")
+    fun changePassword(
+        request: HttpServletRequest,
+        @Validated @RequestBody changePasswordRequest: ChangePasswordRequest
+    ): ApiResponse<Unit> {
+        val currentUserId = securityUtils.getCurrentUserId(request)
+        val command = ChangePasswordCommand(
+            userId = currentUserId,
+            currentPassword = changePasswordRequest.currentPassword,
+            newPassword = changePasswordRequest.newPassword
+        )
+        changePasswordUseCase.execute(command)
+        return ApiResponse.success(message = "비밀번호를 변경했습니다.")
+    }
+
+    @Operation(summary = "프로필 이미지 Presigned URL 생성", description = "S3에 직접 업로드하기 위한 Presigned URL을 생성합니다.")
+    @GetMapping("/me/profile-image/presigned-url")
+    fun generateProfileImagePresignedUrl(
+        request: HttpServletRequest,
+        @RequestParam fileName: String,
+        @RequestParam contentType: String = "image/webp"
+    ): ApiResponse<PresignedUploadUrlResponse> {
+        val userId = securityUtils.getCurrentUserId(request)
+        val response = generateProfileImagePresignedUrlUseCase.execute(userId, fileName, contentType)
+        return ApiResponse.success(response, message = "Presigned URL을 생성했습니다.")
+    }
+
+    @Operation(summary = "프로필 이미지 업로드 확인", description = "S3에 업로드 완료된 프로필 이미지 정보를 저장합니다.")
+    @PostMapping("/me/profile-image/confirm")
+    @ResponseStatus(HttpStatus.CREATED)
+    fun confirmProfileImageUpload(
+        request: HttpServletRequest,
+        @Valid @RequestBody body: ConfirmProfileImageUploadRequest
+    ): ApiResponse<ProfileImageUploadResponse> {
+        val userId = securityUtils.getCurrentUserId(request)
+        val command = ConfirmProfileImageUploadCommand(
+            userId = userId,
+            imageKey = body.imageKey,
+            fileName = body.fileName,
+            fileSize = body.fileSize,
+            width = body.width,
+            height = body.height
+        )
+        val response = confirmProfileImageUploadUseCase.execute(command)
+        return ApiResponse.success(response, message = "프로필 이미지 업로드를 확인했습니다.")
     }
 }

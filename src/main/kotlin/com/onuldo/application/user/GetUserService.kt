@@ -1,5 +1,6 @@
 package com.onuldo.application.user
 
+import com.onuldo.common.config.S3Properties
 import com.onuldo.common.exception.ErrorCode
 import com.onuldo.common.exception.ResourceNotFoundException
 import com.onuldo.port.inbound.user.model.UserResponse
@@ -10,7 +11,8 @@ import org.springframework.transaction.annotation.Transactional
 
 @Service
 class GetUserService(
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val s3Properties: S3Properties
 ) : GetUserUseCase {
 
     @Transactional(readOnly = true)
@@ -18,11 +20,16 @@ class GetUserService(
         val result = userRepository.findUserWithFollowCount(userId)
             ?: throw ResourceNotFoundException("사용자", userId, ErrorCode.USER_NOT_FOUND)
 
+        // 프로필 이미지 URL에 S3 도메인 추가
+        val profileImageUrl = result.profileImageUrl?.let { imageKey ->
+            "${s3Properties.baseUrl}/$imageKey"
+        }
+
         return UserResponse(
             userId = result.userId,
             email = result.email,
             nickname = result.nickname,
-            profileImageUrl = result.profileImageUrl,
+            profileImageUrl = profileImageUrl,
             bio = result.bio,
             followerCount = result.followerCount,
             followingCount = result.followingCount,
