@@ -54,7 +54,10 @@ dependencies {
     // Swagger
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.0")
 
-    // H2
+    // MySQL
+    runtimeOnly("com.mysql:mysql-connector-j")
+    
+    // H2 (테스트용)
     runtimeOnly("com.h2database:h2")
 
     // AWS S3
@@ -68,6 +71,7 @@ dependencies {
     implementation("com.google.firebase:firebase-admin:9.2.0")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.mockito.kotlin:mockito-kotlin:5.2.1")
 }
 
 

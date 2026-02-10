@@ -1,11 +1,14 @@
 package com.onuldo.application.reaction
 
+import com.onuldo.application.notification.CreateNotificationService
 import com.onuldo.common.exception.CustomException
 import com.onuldo.common.exception.ErrorCode
 import com.onuldo.domain.reaction.EmojiType
 import com.onuldo.domain.reaction.Reaction
 import com.onuldo.port.inbound.reaction.model.AddReactionCommand
 import com.onuldo.port.outbound.reaction.ReactionRepository
+import com.onuldo.port.outbound.record.RecordRepository
+import com.onuldo.port.outbound.user.UserRepository
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
@@ -23,11 +26,25 @@ class AddReactionServiceTest {
     @Mock
     private lateinit var reactionRepository: ReactionRepository
 
+    @Mock
+    private lateinit var recordRepository: RecordRepository
+
+    @Mock
+    private lateinit var userRepository: UserRepository
+
+    @Mock
+    private lateinit var createNotificationService: CreateNotificationService
+
     private lateinit var addReactionService: AddReactionService
 
     @BeforeEach
     fun setUp() {
-        addReactionService = AddReactionService(reactionRepository)
+        addReactionService = AddReactionService(
+            reactionRepository,
+            recordRepository,
+            userRepository,
+            createNotificationService
+        )
     }
 
     @Test
