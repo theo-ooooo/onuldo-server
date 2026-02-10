@@ -25,7 +25,8 @@ class GetUserService(
             profileImageUrl = result.profileImageUrl,
             bio = result.bio,
             followerCount = result.followerCount,
-            followingCount = result.followingCount
+            followingCount = result.followingCount,
+            fcmToken = result.fcmToken,
         )
     }
 }

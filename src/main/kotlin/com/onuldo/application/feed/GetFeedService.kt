@@ -2,6 +2,7 @@ package com.onuldo.application.feed
 
 import com.onuldo.adapter.outbound.persistence.feed.FeedQueryRepository
 import com.onuldo.domain.record.Record
+import com.onuldo.port.inbound.feed.model.FeedImageResponse
 import com.onuldo.port.inbound.feed.model.FeedItemResponse
 import com.onuldo.port.inbound.feed.model.FeedQuery
 import com.onuldo.port.inbound.feed.model.FeedType
@@ -9,9 +10,11 @@ import com.onuldo.port.inbound.feed.usecase.GetFeedUseCase
 import com.onuldo.port.outbound.follow.FollowRepository
 import com.onuldo.port.outbound.hobby.HobbyRepository
 import com.onuldo.port.outbound.reaction.ReactionRepository
+import com.onuldo.port.outbound.record.RecordImageRepository
 import com.onuldo.port.outbound.tag.RecordTagRepository
 import com.onuldo.port.outbound.tag.TagRepository
 import com.onuldo.port.outbound.user.UserRepository
+import com.onuldo.common.config.S3Properties
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -23,7 +26,9 @@ class GetFeedService(
     private val hobbyRepository: HobbyRepository,
     private val recordTagRepository: RecordTagRepository,
     private val tagRepository: TagRepository,
-    private val reactionRepository: ReactionRepository
+    private val reactionRepository: ReactionRepository,
+    private val recordImageRepository: RecordImageRepository,
+    private val s3Properties: S3Properties
 ) : GetFeedUseCase {
 
     @Transactional(readOnly = true)
@@ -46,6 +51,14 @@ class GetFeedService(
         val tagIds = recordTags.map { it.tagId }
         val tags = if (tagIds.isNotEmpty()) tagRepository.findByIds(tagIds) else emptyList()
         val reactionCounts = reactionRepository.countByRecordIdGroupByEmojiType(record.id!!)
+        val images = recordImageRepository.findByRecordId(record.id!!).map { image ->
+            FeedImageResponse(
+                imageId = image.imageId,
+                imageUrl = "${s3Properties.baseUrl}/${image.imageUrl}",
+                width = image.width,
+                height = image.height
+            )
+        }
 
         return FeedItemResponse(
             recordId = record.id!!,
@@ -59,6 +72,7 @@ class GetFeedService(
             visibility = record.visibility,
             activityDate = record.activityDate,
             tags = tags.map { it.name },
+            images = images,
             reactionCounts = reactionCounts,
             commentCount = 0,  // TODO: Add comment count
             createdAt = record.createdAt!!

@@ -10,18 +10,18 @@ import com.onuldo.port.inbound.image.usecase.UploadImageUseCase
 import com.onuldo.adapter.outbound.storage.S3FileStorage
 import com.onuldo.port.outbound.record.RecordImageRepository
 import com.onuldo.port.outbound.record.RecordRepository
+import org.springframework.core.env.Environment
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 import java.util.UUID
 
 @Service
 class UploadImageService(
     private val recordRepository: RecordRepository,
     private val recordImageRepository: RecordImageRepository,
-    private val s3FileStorage: S3FileStorage
+    private val s3FileStorage: S3FileStorage,
+    private val environment: Environment
 ) : UploadImageUseCase {
 
     @Transactional
@@ -45,10 +45,8 @@ class UploadImageService(
 
         // Generate file name
         val originalFileName = file.originalFilename ?: "image"
-        val extension = originalFileName.substringAfterLast('.', "")
-        val timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"))
-        val uuid = UUID.randomUUID().toString().substring(0, 8)
-        val fileName = "record_${recordId}_${timestamp}_${uuid}.${extension}"
+        val profile = environment.activeProfiles.firstOrNull() ?: "local"
+        val imageUuid = UUID.randomUUID().toString()
 
         // Get image dimensions
         val (width, height) = try {
@@ -65,7 +63,8 @@ class UploadImageService(
         }
 
         // Save resized image (WebP 형식)
-        val directory = "records/${recordId}"
+        val directory = "${profile}/records/${recordId}"
+        val fileName = "${imageUuid}.webp"
         val contentType = "image/webp"
         val imageUrl = s3FileStorage.saveFile(resizedImageBytes, directory, fileName, contentType)
 
@@ -73,6 +72,7 @@ class UploadImageService(
         val recordImage = RecordImage(
             userId = userId,
             recordId = recordId,
+            imageId = imageUuid,
             imageUrl = imageUrl,
             fileName = originalFileName,
             fileSize = file.size,
@@ -83,10 +83,10 @@ class UploadImageService(
         )
 
         val savedImage = recordImageRepository.save(recordImage)
-        val imageId = savedImage.id ?: throw CustomException(ErrorCode.COMMON_INTERNAL_SERVER_ERROR, "이미지 ID가 없습니다.")
+        val savedId = savedImage.id ?: throw CustomException(ErrorCode.COMMON_INTERNAL_SERVER_ERROR, "이미지 ID가 없습니다.")
 
         return ImageUploadResponse(
-            imageId = imageId,
+            imageId = savedId,
             imageUrl = imageUrl,
             fileName = originalFileName,
             fileSize = file.size,

@@ -7,5 +7,6 @@ data class UserWithFollowCountResult(
     val profileImageUrl: String?,
     val bio: String?,
     val followerCount: Long,
-    val followingCount: Long
+    val followingCount: Long,
+    val fcmToken: String?,
 )

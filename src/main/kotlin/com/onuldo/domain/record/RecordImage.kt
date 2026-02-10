@@ -24,6 +24,9 @@ class RecordImage(
     @Column(name = "record_id", nullable = false)
     val recordId: Long,
 
+    @Column(name = "image_id", nullable = false, length = 36)
+    val imageId: String,
+
     @Column(name = "image_url", nullable = false, length = 500)
     val imageUrl: String,
 

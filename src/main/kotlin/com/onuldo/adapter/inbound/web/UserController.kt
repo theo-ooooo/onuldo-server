@@ -11,7 +11,6 @@ import com.onuldo.port.inbound.follow.usecase.GetFollowingUseCase
 import com.onuldo.port.inbound.follow.usecase.UnfollowUserUseCase
 import com.onuldo.adapter.inbound.web.dto.UpdateFcmTokenRequest
 import com.onuldo.port.inbound.user.model.UserResponse
-import com.onuldo.port.inbound.user.usecase.GetMyInfoUseCase
 import com.onuldo.port.inbound.user.usecase.GetUserUseCase
 import com.onuldo.port.inbound.user.usecase.SearchUsersUseCase
 import com.onuldo.port.inbound.user.usecase.UpdateFcmTokenUseCase
@@ -27,7 +26,6 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/api/users")
 class UserController(
     private val securityUtils: SecurityUtils,
-    private val getMyInfoUseCase: GetMyInfoUseCase,
     private val getUserUseCase: GetUserUseCase,
     private val searchUsersUseCase: SearchUsersUseCase,
     private val followUserUseCase: FollowUserUseCase,
@@ -42,7 +40,7 @@ class UserController(
     @GetMapping("/me")
     fun getMyInfo(request: HttpServletRequest): ApiResponse<UserResponse> {
         val currentUserId = securityUtils.getCurrentUserId(request)
-        val userResponse = getMyInfoUseCase.execute(currentUserId)
+        val userResponse = getUserUseCase.execute(currentUserId)
         return ApiResponse.success(userResponse, message = "내 정보를 조회했습니다.")
     }
 

@@ -39,9 +39,11 @@ class ConfirmImageUploadService(
         val imageUrl = s3FileStorage.generatePresignedDownloadUrl(command.imageKey, 60 * 24 * 7) // 7일
 
         // Save record image entity
+        val imageUuid = command.imageKey.substringAfterLast('/').substringBeforeLast('.')
         val recordImage = RecordImage(
             userId = command.userId,
             recordId = command.recordId,
+            imageId = imageUuid,
             imageUrl = command.imageKey, // S3 key 저장
             fileName = command.fileName,
             fileSize = command.fileSize,

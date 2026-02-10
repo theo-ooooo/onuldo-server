@@ -43,7 +43,8 @@ class UserRepositoryImpl(
                 profileImageUrl = user.profileImageUrl,
                 bio = user.bio,
                 followerCount = followRepository.countByFollowingId(user.id!!),
-                followingCount = followRepository.countByFollowerId(user.id!!)
+                followingCount = followRepository.countByFollowerId(user.id!!),
+                fcmToken = user.fcmToken,
             )
         }
 
@@ -56,7 +57,8 @@ class UserRepositoryImpl(
                 profileImageUrl = user.profileImageUrl,
                 bio = user.bio,
                 followerCount = followRepository.countByFollowingId(userId),
-                followingCount = followRepository.countByFollowerId(userId)
+                followingCount = followRepository.countByFollowerId(userId),
+                fcmToken = user.fcmToken,
             )
         }
 }

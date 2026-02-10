@@ -17,7 +17,15 @@ data class FeedItemResponse(
     val visibility: RecordVisibility,
     val activityDate: LocalDate,
     val tags: List<String>,
+    val images: List<FeedImageResponse>,
     val reactionCounts: Map<EmojiType, Long>,
     val commentCount: Int,
     val createdAt: LocalDateTime
+)
+
+data class FeedImageResponse(
+    val imageId: String,
+    val imageUrl: String,
+    val width: Int?,
+    val height: Int?
 )

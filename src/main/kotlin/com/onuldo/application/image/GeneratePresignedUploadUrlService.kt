@@ -7,16 +7,16 @@ import com.onuldo.common.exception.ResourceNotFoundException
 import com.onuldo.port.inbound.image.model.PresignedUploadUrlResponse
 import com.onuldo.port.inbound.image.usecase.GeneratePresignedUploadUrlUseCase
 import com.onuldo.port.outbound.record.RecordRepository
+import org.springframework.core.env.Environment
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 import java.util.UUID
 
 @Service
 class GeneratePresignedUploadUrlService(
     private val recordRepository: RecordRepository,
-    private val s3FileStorage: S3FileStorage
+    private val s3FileStorage: S3FileStorage,
+    private val environment: Environment
 ) : GeneratePresignedUploadUrlUseCase {
 
     @Transactional(readOnly = true)
@@ -30,11 +30,9 @@ class GeneratePresignedUploadUrlService(
         }
 
         // Generate file name
-        val originalFileName = fileName
-        val extension = "webp" // 항상 webp로 변환
-        val timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"))
-        val uuid = UUID.randomUUID().toString().substring(0, 8)
-        val imageKey = "records/${recordId}/image_${timestamp}_${uuid}.${extension}"
+        val profile = environment.activeProfiles.firstOrNull() ?: "local"
+        val imageId = UUID.randomUUID().toString()
+        val imageKey = "${profile}/records/${recordId}/${imageId}.webp"
 
         // Generate presigned URL
         val uploadUrl = s3FileStorage.generatePresignedUploadUrl(imageKey, "image/webp", 5)
